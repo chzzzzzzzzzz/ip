@@ -1,4 +1,14 @@
+import java.util.Scanner;
+
+/**
+ * A simple chatbot that echoes commands until the user says goodbye.
+ */
 public class Bot {
+    /**
+     * Starts the chatbot and handles commands entered by the user.
+     *
+     * @param args command-line arguments; not used by this application
+     */
     public static void main(String[] args) {
         String line = "_".repeat(60);
         String banner = """
@@ -12,8 +22,16 @@ public class Bot {
         System.out.println("Yo! I'm Bot.");
         System.out.println("What can I do for you?");
         System.out.println(line);
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        while (!input.equals("bye")) {
+            System.out.println("  " + line);
+            System.out.println("  " + input);
+            System.out.println("  " + line);
+            input = scanner.nextLine();
+        }
+        System.out.println(line);
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(line);
-
     }
 }
