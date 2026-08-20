@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 /**
- * A simple chatbot that echoes commands until the user says goodbye.
+ * A simple chatbot that stores and displays tasks until the user says goodbye.
  */
 public class Bot {
     /**
@@ -24,10 +24,20 @@ public class Bot {
         System.out.println(line);
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
+        String[] tasks = new String[100];
+        int taskCount = 0;
         while (!input.equals("bye")) {
-            System.out.println("  " + line);
-            System.out.println("  " + input);
-            System.out.println("  " + line);
+            System.out.println("    " + line);
+            if (input.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(String.format("    %d. %s", i + 1, tasks[i]));
+                }
+            } else {
+                System.out.println(String.format("    added: %s", input));
+                tasks[taskCount] = input;
+                taskCount++;
+            }
+            System.out.println("    " + line);
             input = scanner.nextLine();
         }
         System.out.println(line);
