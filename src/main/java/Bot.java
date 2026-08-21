@@ -30,27 +30,35 @@ public class Bot {
         while (!input.equals("bye")) {
             System.out.println("    " + line);
             if (input.equals("list")) {
+                System.out.println("    Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(String.format("    %d.[%s] %s", i + 1, tasks[i].getStatusIcon(),
-                                                                                tasks[i].description));
+                    System.out.println(String.format("    %d.%s", i + 1, tasks[i]));
                 }
             } else if (parts[0].equals("mark")) {
                 int num = Integer.parseInt(parts[1]) - 1;
                 tasks[num].mark();
                 System.out.println("    Nice! I've marked this task as done:");
-                System.out.println(String.format("        [%s] %s", tasks[num].getStatusIcon(),
-                                                                    tasks[num].description));
+                System.out.println("        " + tasks[num]);
             } else if (parts[0].equals("unmark")) {
                 int num = Integer.parseInt(parts[1]) - 1;
                 tasks[num].unmark();
-                System.out.println("    OK! Get it done soon.");
-                System.out.println(String.format("        [%s] %s", tasks[num].getStatusIcon(),
-                                                                    tasks[num].description));
-            }
-            else {
-                System.out.println(String.format("    added: %s", input));
-                tasks[taskCount] = new Task(input);
+                System.out.println("    OK, I've marked this task as not done yet:");
+                System.out.println("        " + tasks[num]);
+            } else if (parts[0].equals("todo")) {
+                tasks[taskCount] = new Todo(parts[1]);
                 taskCount++;
+                printTaskAdded(tasks[taskCount - 1], taskCount);
+            } else if (parts[0].equals("deadline")) {
+                String[] deadlineParts = parts[1].split(" /by ", 2);
+                tasks[taskCount] = new Deadline(deadlineParts[0], deadlineParts[1]);
+                taskCount++;
+                printTaskAdded(tasks[taskCount - 1], taskCount);
+            } else if (parts[0].equals("event")) {
+                String[] eventParts = parts[1].split(" /from ", 2);
+                String[] timeParts = eventParts[1].split(" /to ", 2);
+                tasks[taskCount] = new Event(eventParts[0], timeParts[0], timeParts[1]);
+                taskCount++;
+                printTaskAdded(tasks[taskCount - 1], taskCount);
             }
             System.out.println("    " + line);
             input = scanner.nextLine();
@@ -59,5 +67,17 @@ public class Bot {
         System.out.println(line);
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(line);
+    }
+
+    /**
+     * Displays confirmation that a task was added.
+     *
+     * @param task task that was added
+     * @param taskCount total number of tasks after the addition
+     */
+    private static void printTaskAdded(Task task, int taskCount) {
+        System.out.println("    Got it. I've added this task:");
+        System.out.println("        " + task);
+        System.out.println("    Now you have " + taskCount + " tasks in the list.");
     }
 }
