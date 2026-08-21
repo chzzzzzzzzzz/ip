@@ -23,50 +23,76 @@ public class Bot {
         System.out.println("What can I do for you?");
         System.out.println(line);
         Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        String[] parts = input.split(" ", 2);
         Task[] tasks = new Task[100];
         int taskCount = 0;
-        while (!input.equals("bye")) {
+        while (scanner.hasNextLine()) {
+            String input = scanner.nextLine().trim();
+            if (input.equals("bye")) {
+                break;
+            }
+
             System.out.println("    " + line);
-            if (input.equals("list")) {
-                System.out.println("    Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println(String.format("    %d.%s", i + 1, tasks[i]));
+            try {
+                String[] parts = input.split("\\s+", 2);
+                String command = parts[0];
+                String arguments = parts.length == 2 ? parts[1].trim() : "";
+
+                if (command.equals("list")) {
+                    ensureNoArguments(arguments, "list");
+                    printTaskList(tasks, taskCount);
+                } else if (command.equals("mark")) {
+                    int taskIndex = parseTaskIndex(arguments, taskCount, "mark");
+                    tasks[taskIndex].mark();
+                    System.out.println("    Nice! I've marked this task as done:");
+                    System.out.println("        " + tasks[taskIndex]);
+                } else if (command.equals("unmark")) {
+                    int taskIndex = parseTaskIndex(arguments, taskCount, "unmark");
+                    tasks[taskIndex].unmark();
+                    System.out.println("    OK, I've marked this task as not done yet:");
+                    System.out.println("        " + tasks[taskIndex]);
+                } else if (command.equals("todo")) {
+                    ensureTaskCapacity(taskCount, tasks.length);
+                    tasks[taskCount] = parseTodo(arguments);
+                    taskCount++;
+                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                } else if (command.equals("deadline")) {
+                    ensureTaskCapacity(taskCount, tasks.length);
+                    tasks[taskCount] = parseDeadline(arguments);
+                    taskCount++;
+                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                } else if (command.equals("event")) {
+                    ensureTaskCapacity(taskCount, tasks.length);
+                    tasks[taskCount] = parseEvent(arguments);
+                    taskCount++;
+                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                } else if (command.equals("bye")) {
+                    throw new BotException("Use bye without any extra words.");
+                } else if (command.isEmpty()) {
+                    throw new BotException("Please enter a command.");
+                } else {
+                    throw new BotException("I don't know what \"" + command + "\" means.");
                 }
-            } else if (parts[0].equals("mark")) {
-                int num = Integer.parseInt(parts[1]) - 1;
-                tasks[num].mark();
-                System.out.println("    Nice! I've marked this task as done:");
-                System.out.println("        " + tasks[num]);
-            } else if (parts[0].equals("unmark")) {
-                int num = Integer.parseInt(parts[1]) - 1;
-                tasks[num].unmark();
-                System.out.println("    OK, I've marked this task as not done yet:");
-                System.out.println("        " + tasks[num]);
-            } else if (parts[0].equals("todo")) {
-                tasks[taskCount] = new Todo(parts[1]);
-                taskCount++;
-                printTaskAdded(tasks[taskCount - 1], taskCount);
-            } else if (parts[0].equals("deadline")) {
-                String[] deadlineParts = parts[1].split(" /by ", 2);
-                tasks[taskCount] = new Deadline(deadlineParts[0], deadlineParts[1]);
-                taskCount++;
-                printTaskAdded(tasks[taskCount - 1], taskCount);
-            } else if (parts[0].equals("event")) {
-                String[] eventParts = parts[1].split(" /from ", 2);
-                String[] timeParts = eventParts[1].split(" /to ", 2);
-                tasks[taskCount] = new Event(eventParts[0], timeParts[0], timeParts[1]);
-                taskCount++;
-                printTaskAdded(tasks[taskCount - 1], taskCount);
+            } catch (BotException error) {
+                System.out.println("    OOPS!!! " + error.getMessage());
             }
             System.out.println("    " + line);
-            input = scanner.nextLine();
-            parts = input.split(" ", 2);
         }
         System.out.println(line);
         System.out.println("Bye. Hope to see you again soon!");
         System.out.println(line);
+    }
+
+    /**
+     * Displays all tasks in their current order.
+     *
+     * @param tasks array containing the tasks
+     * @param taskCount number of tasks currently stored
+     */
+    private static void printTaskList(Task[] tasks, int taskCount) {
+        System.out.println("    Here are the tasks in your list:");
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println(String.format("    %d.%s", i + 1, tasks[i]));
+        }
     }
 
     /**
@@ -79,5 +105,141 @@ public class Bot {
         System.out.println("    Got it. I've added this task:");
         System.out.println("        " + task);
         System.out.println("    Now you have " + taskCount + " tasks in the list.");
+    }
+
+    /**
+     * Creates a todo after checking that it has a description.
+     *
+     * @param arguments text following the todo command
+     * @return the parsed todo
+     * @throws BotException if the description is empty
+     */
+    private static Todo parseTodo(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("The description of a todo cannot be empty.");
+        }
+        return new Todo(arguments);
+    }
+
+    /**
+     * Creates a deadline after checking its description and /by value.
+     *
+     * @param arguments text following the deadline command
+     * @return the parsed deadline
+     * @throws BotException if required deadline information is missing
+     */
+    private static Deadline parseDeadline(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("The description of a deadline cannot be empty.");
+        }
+
+        int byPosition = arguments.indexOf("/by");
+        if (byPosition < 0) {
+            throw new BotException("A deadline must include /by followed by its date or time.");
+        }
+
+        String description = arguments.substring(0, byPosition).trim();
+        String by = arguments.substring(byPosition + 3).trim();
+        if (description.isEmpty()) {
+            throw new BotException("The description of a deadline cannot be empty.");
+        }
+        if (by.isEmpty()) {
+            throw new BotException("The date or time of a deadline cannot be empty.");
+        }
+        return new Deadline(description, by);
+    }
+
+    /**
+     * Creates an event after checking its description, /from value, and /to value.
+     *
+     * @param arguments text following the event command
+     * @return the parsed event
+     * @throws BotException if required event information is missing
+     */
+    private static Event parseEvent(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("The description of an event cannot be empty.");
+        }
+
+        int fromPosition = arguments.indexOf("/from");
+        if (fromPosition < 0) {
+            throw new BotException("An event must include /from followed by its start time.");
+        }
+
+        int toPosition = arguments.indexOf("/to", fromPosition + 5);
+        if (toPosition < 0) {
+            throw new BotException("An event must include /to followed by its end time.");
+        }
+
+        String description = arguments.substring(0, fromPosition).trim();
+        String from = arguments.substring(fromPosition + 5, toPosition).trim();
+        String to = arguments.substring(toPosition + 3).trim();
+        if (description.isEmpty()) {
+            throw new BotException("The description of an event cannot be empty.");
+        }
+        if (from.isEmpty()) {
+            throw new BotException("The start time of an event cannot be empty.");
+        }
+        if (to.isEmpty()) {
+            throw new BotException("The end time of an event cannot be empty.");
+        }
+        return new Event(description, from, to);
+    }
+
+    /**
+     * Converts a one-based task number into a valid array index.
+     *
+     * @param arguments task number entered after mark or unmark
+     * @param taskCount number of tasks currently stored
+     * @param command command being processed
+     * @return zero-based index of the selected task
+     * @throws BotException if the task number is missing or invalid
+     */
+    private static int parseTaskIndex(String arguments, int taskCount, String command) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("Tell me which task number to " + command + ".");
+        }
+
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(arguments);
+        } catch (NumberFormatException error) {
+            throw new BotException("The task number must be a whole number.");
+        }
+
+        if (taskCount == 0) {
+            throw new BotException("The task list is empty.");
+        }
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new BotException("Task number " + taskNumber + " does not exist. Choose a number from 1 to "
+                    + taskCount + ".");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
+     * Checks that a command which takes no arguments was entered correctly.
+     *
+     * @param arguments text following the command
+     * @param command command being checked
+     * @throws BotException if extra text was supplied
+     */
+    private static void ensureNoArguments(String arguments, String command) throws BotException {
+        if (!arguments.isEmpty()) {
+            throw new BotException("The " + command + " command does not take extra information.");
+        }
+    }
+
+    /**
+     * Checks that the fixed-size task array still has room for another task.
+     *
+     * @param taskCount number of tasks currently stored
+     * @param capacity maximum number of tasks that can be stored
+     * @throws BotException if the task list is full
+     */
+    private static void ensureTaskCapacity(int taskCount, int capacity) throws BotException {
+        if (taskCount >= capacity) {
+            throw new BotException("The task list is full. I cannot store more than " + capacity + " tasks.");
+        }
     }
 }
