@@ -36,42 +36,65 @@ public class Bot {
                 String[] parts = input.split("\\s+", 2);
                 String command = parts[0];
                 String arguments = parts.length == 2 ? parts[1].trim() : "";
+                CommandType commandType = CommandType.from(command);
 
-                if (command.equals("list")) {
-                    ensureNoArguments(arguments, "list");
-                    printTaskList(tasks);
-                } else if (command.equals("mark")) {
-                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
-                    tasks.get(taskIndex).mark();
-                    System.out.println("    Nice! I've marked this task as done:");
-                    System.out.println("        " + tasks.get(taskIndex));
-                } else if (command.equals("unmark")) {
-                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
-                    tasks.get(taskIndex).unmark();
-                    System.out.println("    OK, I've marked this task as not done yet:");
-                    System.out.println("        " + tasks.get(taskIndex));
-                } else if (command.equals("delete")) {
-                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
-                    Task taskRemoved = tasks.remove(taskIndex);
-                    printTaskDeleted(taskRemoved, tasks.size());
-                } else if (command.equals("todo")) {
-                    Task task = parseTodo(arguments);
-                    tasks.add(task);
-                    printTaskAdded(task, tasks.size());
-                } else if (command.equals("deadline")) {
-                    Task task = parseDeadline(arguments);
-                    tasks.add(task);
-                    printTaskAdded(task, tasks.size());
-                } else if (command.equals("event")) {
-                    Task task = parseEvent(arguments);
-                    tasks.add(task);
-                    printTaskAdded(task, tasks.size());
-                } else if (command.equals("bye")) {
-                    throw new BotException("Use bye without any extra words.");
-                } else if (command.isEmpty()) {
-                    throw new BotException("Please enter a command.");
-                } else {
-                    throw new BotException("I don't know what \"" + command + "\" means.");
+                switch(commandType) {
+                    case LIST: {
+                        ensureNoArguments(arguments, "list");
+                        printTaskList(tasks);
+                        break;
+                    }
+                    case MARK: {
+                        int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
+                        tasks.get(taskIndex).mark();
+                        System.out.println("    Nice! I've marked this task as done:");
+                        System.out.println("        " + tasks.get(taskIndex));
+                        break;
+                    }
+                    case UNMARK: {
+                        int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
+                        tasks.get(taskIndex).unmark();
+                        System.out.println("    OK, I've marked this task as not done yet:");
+                        System.out.println("        " + tasks.get(taskIndex));
+                        break;
+                    }
+                    case DELETE: {
+                        int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
+                        Task taskRemoved = tasks.remove(taskIndex);
+                        printTaskDeleted(taskRemoved, tasks.size());
+                        break;
+                    }
+                    case TODO: {
+                        Task task = parseTodo(arguments);
+                        tasks.add(task);
+                        printTaskAdded(task, tasks.size());
+                        break;
+                    }
+                    case DEADLINE: {
+                        Task task = parseDeadline(arguments);
+                        tasks.add(task);
+                        printTaskAdded(task, tasks.size());
+                        break;
+                    }
+                    case EVENT: {
+                        Task task = parseEvent(arguments);
+                        tasks.add(task);
+                        printTaskAdded(task, tasks.size());
+                        break;
+                    }
+                    case BYE: {
+                        throw new BotException("Use bye without any extra words.");
+                    }
+                    case UNKNOWN: {
+                        if (command.isEmpty()) {
+                            throw new BotException("Please enter a command.");
+                        } else {
+                            throw new BotException(
+                                    "I don't know what \"" + command + "\" means.");
+                        }
+                    }
+
+
                 }
             } catch (BotException error) {
                 System.out.println("    OOPS!!! " + error.getMessage());
@@ -86,7 +109,7 @@ public class Bot {
     /**
      * Displays all tasks in their current order.
      *
-     * @param tasks array containing the tasks
+     * @param tasks list containing the tasks
      */
     private static void printTaskList(ArrayList<Task> tasks) {
         System.out.println("    Here are the tasks in your list:");
