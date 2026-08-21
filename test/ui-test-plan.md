@@ -203,3 +203,80 @@ OOPS!!! Please enter a command.
 OOPS!!! Use bye without any extra words.
 Bye. Hope to see you again soon!
 ```
+
+## TC8 — Delete a task and renumber the remaining list
+
+**Aim:** Verify that delete removes the selected task, reports the new task count, and shifts later tasks to the correct list numbers.
+
+### Inputs
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+todo borrow book
+delete 2
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] return book (by: June 6th)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+Now you have 3 tasks in the list.
+Got it. I've added this task:
+[T][ ] borrow book
+Now you have 4 tasks in the list.
+Noted. I've removed this task:
+[D][ ] return book (by: June 6th)
+Now you have 3 tasks in the list.
+Here are the tasks in your list:
+1.[T][ ] read book
+2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+3.[T][ ] borrow book
+Bye. Hope to see you again soon!
+```
+
+## TC9 — Reject invalid delete task numbers
+
+**Aim:** Verify that delete handles missing, nonnumeric, empty-list, and out-of-range task numbers and can remove the final task safely.
+
+### Inputs
+
+```text
+delete
+delete two
+delete 1
+todo read book
+delete 0
+delete 2
+delete 1
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! Tell me which task number to delete.
+OOPS!!! The task number must be a whole number.
+OOPS!!! The task list is empty.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+OOPS!!! Task number 0 does not exist. Choose a number from 1 to 1.
+OOPS!!! Task number 2 does not exist. Choose a number from 1 to 1.
+Noted. I've removed this task:
+[T][ ] read book
+Now you have 0 tasks in the list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
