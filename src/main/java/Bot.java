@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
  * A simple chatbot that stores and displays tasks until the user says goodbye.
@@ -23,8 +24,7 @@ public class Bot {
         System.out.println("What can I do for you?");
         System.out.println(line);
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
             if (input.equals("bye")) {
@@ -39,32 +39,33 @@ public class Bot {
 
                 if (command.equals("list")) {
                     ensureNoArguments(arguments, "list");
-                    printTaskList(tasks, taskCount);
+                    printTaskList(tasks);
                 } else if (command.equals("mark")) {
-                    int taskIndex = parseTaskIndex(arguments, taskCount, "mark");
-                    tasks[taskIndex].mark();
+                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
+                    tasks.get(taskIndex).mark();
                     System.out.println("    Nice! I've marked this task as done:");
-                    System.out.println("        " + tasks[taskIndex]);
+                    System.out.println("        " + tasks.get(taskIndex));
                 } else if (command.equals("unmark")) {
-                    int taskIndex = parseTaskIndex(arguments, taskCount, "unmark");
-                    tasks[taskIndex].unmark();
+                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
+                    tasks.get(taskIndex).unmark();
                     System.out.println("    OK, I've marked this task as not done yet:");
-                    System.out.println("        " + tasks[taskIndex]);
+                    System.out.println("        " + tasks.get(taskIndex));
+                } else if (command.equals("delete")) {
+                    int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
+                    Task taskRemoved = tasks.remove(taskIndex);
+                    printTaskDeleted(taskRemoved, tasks.size());
                 } else if (command.equals("todo")) {
-                    ensureTaskCapacity(taskCount, tasks.length);
-                    tasks[taskCount] = parseTodo(arguments);
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    Task task = parseTodo(arguments);
+                    tasks.add(task);
+                    printTaskAdded(task, tasks.size());
                 } else if (command.equals("deadline")) {
-                    ensureTaskCapacity(taskCount, tasks.length);
-                    tasks[taskCount] = parseDeadline(arguments);
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    Task task = parseDeadline(arguments);
+                    tasks.add(task);
+                    printTaskAdded(task, tasks.size());
                 } else if (command.equals("event")) {
-                    ensureTaskCapacity(taskCount, tasks.length);
-                    tasks[taskCount] = parseEvent(arguments);
-                    taskCount++;
-                    printTaskAdded(tasks[taskCount - 1], taskCount);
+                    Task task = parseEvent(arguments);
+                    tasks.add(task);
+                    printTaskAdded(task, tasks.size());
                 } else if (command.equals("bye")) {
                     throw new BotException("Use bye without any extra words.");
                 } else if (command.isEmpty()) {
@@ -86,12 +87,11 @@ public class Bot {
      * Displays all tasks in their current order.
      *
      * @param tasks array containing the tasks
-     * @param taskCount number of tasks currently stored
      */
-    private static void printTaskList(Task[] tasks, int taskCount) {
+    private static void printTaskList(ArrayList<Task> tasks) {
         System.out.println("    Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println(String.format("    %d.%s", i + 1, tasks[i]));
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(String.format("    %d.%s", i + 1, tasks.get(i)));
         }
     }
 
@@ -103,6 +103,19 @@ public class Bot {
      */
     private static void printTaskAdded(Task task, int taskCount) {
         System.out.println("    Got it. I've added this task:");
+        System.out.println("        " + task);
+        System.out.println("    Now you have " + taskCount + " tasks in the list.");
+    }
+
+    /**
+     * Displays confirmation that a task was deleted.
+     *
+     * @param task task that was deleted
+     * @param taskCount total number of tasks after deletion
+     */
+
+    private static void printTaskDeleted(Task task, int taskCount) {
+        System.out.println("    Noted. I've removed this task:");
         System.out.println("        " + task);
         System.out.println("    Now you have " + taskCount + " tasks in the list.");
     }
@@ -227,19 +240,6 @@ public class Bot {
     private static void ensureNoArguments(String arguments, String command) throws BotException {
         if (!arguments.isEmpty()) {
             throw new BotException("The " + command + " command does not take extra information.");
-        }
-    }
-
-    /**
-     * Checks that the fixed-size task array still has room for another task.
-     *
-     * @param taskCount number of tasks currently stored
-     * @param capacity maximum number of tasks that can be stored
-     * @throws BotException if the task list is full
-     */
-    private static void ensureTaskCapacity(int taskCount, int capacity) throws BotException {
-        if (taskCount >= capacity) {
-            throw new BotException("The task list is full. I cannot store more than " + capacity + " tasks.");
         }
     }
 }
