@@ -24,21 +24,37 @@ public class Bot {
         System.out.println(line);
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        String[] tasks = new String[100];
+        String[] parts = input.split(" ", 2);
+        Task[] tasks = new Task[100];
         int taskCount = 0;
         while (!input.equals("bye")) {
             System.out.println("    " + line);
             if (input.equals("list")) {
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(String.format("    %d. %s", i + 1, tasks[i]));
+                    System.out.println(String.format("    %d.[%s] %s", i + 1, tasks[i].getStatusIcon(),
+                                                                                tasks[i].description));
                 }
-            } else {
+            } else if (parts[0].equals("mark")) {
+                int num = Integer.parseInt(parts[1]) - 1;
+                tasks[num].mark();
+                System.out.println("    Nice! I've marked this task as done:");
+                System.out.println(String.format("        [%s] %s", tasks[num].getStatusIcon(),
+                                                                    tasks[num].description));
+            } else if (parts[0].equals("unmark")) {
+                int num = Integer.parseInt(parts[1]) - 1;
+                tasks[num].unmark();
+                System.out.println("    OK! Get it done soon.");
+                System.out.println(String.format("        [%s] %s", tasks[num].getStatusIcon(),
+                                                                    tasks[num].description));
+            }
+            else {
                 System.out.println(String.format("    added: %s", input));
-                tasks[taskCount] = input;
+                tasks[taskCount] = new Task(input);
                 taskCount++;
             }
             System.out.println("    " + line);
             input = scanner.nextLine();
+            parts = input.split(" ", 2);
         }
         System.out.println(line);
         System.out.println("Bye. Hope to see you again soon!");
