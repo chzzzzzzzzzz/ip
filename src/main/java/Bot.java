@@ -1,5 +1,7 @@
-import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * A simple chatbot that stores and displays tasks until the user says goodbye.
@@ -11,6 +13,7 @@ public class Bot {
      * @param args command-line arguments; not used by this application
      */
     public static void main(String[] args) {
+
         String line = "_".repeat(60);
         String banner = """
                          ____        _
@@ -23,8 +26,17 @@ public class Bot {
         System.out.println("Yo! I'm Bot.");
         System.out.println("What can I do for you?");
         System.out.println(line);
+        Storage storage = new Storage(new File("./data/duke.txt"));
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.loadTasks();
+        } catch (IOException error) {
+            tasks = new ArrayList<>();
+            System.out.println("    OOPS!!! I couldn't load your data file: " + error.getMessage()
+                    + ". I started with an empty list.");
+        }
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
             if (input.equals("bye")) {
@@ -38,7 +50,7 @@ public class Bot {
                 String arguments = parts.length == 2 ? parts[1].trim() : "";
                 CommandType commandType = CommandType.from(command);
 
-                switch(commandType) {
+                switch (commandType) {
                     case LIST: {
                         ensureNoArguments(arguments, "list");
                         printTaskList(tasks);
@@ -47,6 +59,7 @@ public class Bot {
                     case MARK: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
                         tasks.get(taskIndex).mark();
+                        storage.saveTasks(tasks);
                         System.out.println("    Nice! I've marked this task as done:");
                         System.out.println("        " + tasks.get(taskIndex));
                         break;
@@ -54,6 +67,7 @@ public class Bot {
                     case UNMARK: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
                         tasks.get(taskIndex).unmark();
+                        storage.saveTasks(tasks);
                         System.out.println("    OK, I've marked this task as not done yet:");
                         System.out.println("        " + tasks.get(taskIndex));
                         break;
@@ -61,24 +75,28 @@ public class Bot {
                     case DELETE: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
                         Task taskRemoved = tasks.remove(taskIndex);
+                        storage.saveTasks(tasks);
                         printTaskDeleted(taskRemoved, tasks.size());
                         break;
                     }
                     case TODO: {
                         Task task = parseTodo(arguments);
                         tasks.add(task);
+                        storage.saveTasks(tasks);
                         printTaskAdded(task, tasks.size());
                         break;
                     }
                     case DEADLINE: {
                         Task task = parseDeadline(arguments);
                         tasks.add(task);
+                        storage.saveTasks(tasks);
                         printTaskAdded(task, tasks.size());
                         break;
                     }
                     case EVENT: {
                         Task task = parseEvent(arguments);
                         tasks.add(task);
+                        storage.saveTasks(tasks);
                         printTaskAdded(task, tasks.size());
                         break;
                     }
@@ -93,11 +111,11 @@ public class Bot {
                                     "I don't know what \"" + command + "\" means.");
                         }
                     }
-
-
                 }
             } catch (BotException error) {
                 System.out.println("    OOPS!!! " + error.getMessage());
+            } catch (IOException error) {
+                System.out.println("    OOPS!!! I couldn't save your tasks to the data file.");
             }
             System.out.println("    " + line);
         }
