@@ -20,6 +20,8 @@ class TestCase:
     aim: str
     inputs: list[str]
     expected: list[str]
+    initial_data: list[str] | None
+    expected_data: list[str] | None
 
 
 def read_fenced_block(body: str, heading: str) -> str:
@@ -48,7 +50,17 @@ def load_test_cases(plan_path: Path) -> list[TestCase]:
             raise ValueError(f"{name}: missing '**Aim:**' field")
         inputs = read_fenced_block(body, "Inputs").splitlines()
         expected = read_fenced_block(body, "Expected output").splitlines()
-        cases.append(TestCase(name, aim_match.group(1).strip(), inputs, expected))
+        try:
+            initial_data = read_fenced_block(body, "Initial data file").splitlines()
+        except ValueError:
+            initial_data = None
+        try:
+            expected_data = read_fenced_block(body, "Expected data file").splitlines()
+        except ValueError:
+            expected_data = None
+        cases.append(
+            TestCase(name, aim_match.group(1).strip(), inputs, expected, initial_data, expected_data)
+        )
     if not cases:
         raise ValueError("No test cases found in the test plan")
     return cases
@@ -160,7 +172,13 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
             print(compile_result.stdout + compile_result.stderr)
             return 1
 
-        for case in cases:
+        for case_number, case in enumerate(cases, start=1):
+            case_directory = Path(build_dir) / f"case-{case_number}"
+            case_directory.mkdir()
+            if case.initial_data is not None:
+                data_path = case_directory / "data/duke.txt"
+                data_path.parent.mkdir()
+                data_path.write_text("\n".join(case.initial_data) + "\n", encoding="utf-8")
             console_input = "\n".join(case.inputs) + "\n"
             print(f"\n=== {case.name} ===")
             print(f"Aim: {case.aim}")
@@ -174,6 +192,7 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
                     text=True,
                     timeout=10,
                     check=False,
+                    cwd=case_directory,
                 )
             except subprocess.TimeoutExpired:
                 print("--- Console output ---")
@@ -186,12 +205,29 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
             print(console_output.rstrip() or "<no output>")
             actual = normalize_actual(console_output)
             expected = normalize_expected(case.expected)
+            output_failed = result.returncode != 0 or actual != expected
 
-            if result.returncode != 0 or actual != expected:
-                print("--- Expected normalized output ---")
-                print_lines(expected)
-                print("--- Actual normalized output ---")
-                print_lines(actual)
+            data_failed = False
+            actual_data = []
+            if case.expected_data is not None:
+                data_path = case_directory / "data/duke.txt"
+                if data_path.is_file():
+                    actual_data = data_path.read_text(encoding="utf-8").splitlines()
+                print("--- Data file output ---")
+                print_lines(actual_data)
+                data_failed = actual_data != case.expected_data
+
+            if output_failed or data_failed:
+                if output_failed:
+                    print("--- Expected normalized output ---")
+                    print_lines(expected)
+                    print("--- Actual normalized output ---")
+                    print_lines(actual)
+                if data_failed:
+                    print("--- Expected data file ---")
+                    print_lines(case.expected_data)
+                    print("--- Actual data file ---")
+                    print_lines(actual_data)
                 print(f"Exit code: {result.returncode}")
                 print("RESULT: FAIL")
                 return 1

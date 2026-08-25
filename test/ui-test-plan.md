@@ -2,7 +2,10 @@
 
 Each test case starts with an empty in-memory task list. Expected output omits
 the startup banner, indentation, blank lines, and underscore separators because
-the runner normalizes those presentation details before comparison.
+the runner normalizes those presentation details before comparison. Storage
+tests run in isolated temporary directories and may specify the expected
+contents of `data/duke.txt`. Loading tests may seed an initial data file before
+the chatbot starts.
 
 ## TC1 — Add and list all task types
 
@@ -277,6 +280,253 @@ OOPS!!! Task number 2 does not exist. Choose a number from 1 to 1.
 Noted. I've removed this task:
 [T][ ] read book
 Now you have 0 tasks in the list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC10 — Save task types and done status
+
+**Aim:** Verify that adding each task type and marking a task writes its current state to the data file.
+
+### Inputs
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+mark 1
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] return book (by: June 6th)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+Now you have 3 tasks in the list.
+Nice! I've marked this task as done:
+[T][X] read book
+Bye. Hope to see you again soon!
+```
+
+### Expected data file
+
+```text
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 0 | project meeting | Aug 6th 2pm | 4pm
+```
+
+## TC11 — Save after unmarking and deleting
+
+**Aim:** Verify that unmark and delete overwrite the data file with only the remaining tasks and their latest statuses.
+
+### Inputs
+
+```text
+todo read book
+deadline return book /by Friday
+mark 1
+unmark 1
+delete 2
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] return book (by: Friday)
+Now you have 2 tasks in the list.
+Nice! I've marked this task as done:
+[T][X] read book
+OK, I've marked this task as not done yet:
+[T][ ] read book
+Noted. I've removed this task:
+[D][ ] return book (by: Friday)
+Now you have 1 tasks in the list.
+Bye. Hope to see you again soon!
+```
+
+### Expected data file
+
+```text
+T | 0 | read book
+```
+
+## TC12 — Load all task types and done statuses
+
+**Aim:** Verify that startup loading reconstructs todo, deadline, and event tasks with their saved done statuses and details.
+
+### Initial data file
+
+```text
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 1 | project meeting | Aug 6th 2pm | 4pm
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+Here are the tasks in your list:
+1.[T][X] read book
+2.[D][ ] return book (by: June 6th)
+3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
+Bye. Hope to see you again soon!
+```
+
+## TC13 — Modify and save loaded tasks
+
+**Aim:** Verify that loaded tasks can be unmarked, deleted, extended, and then saved back in their updated state.
+
+### Initial data file
+
+```text
+T | 0 | read book
+D | 1 | return book | Friday
+```
+
+### Inputs
+
+```text
+unmark 2
+delete 1
+event team meeting /from Monday 2pm /to 4pm
+list
+bye
+```
+
+### Expected output
+
+```text
+OK, I've marked this task as not done yet:
+[D][ ] return book (by: Friday)
+Noted. I've removed this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[E][ ] team meeting (from: Monday 2pm to: 4pm)
+Now you have 2 tasks in the list.
+Here are the tasks in your list:
+1.[D][ ] return book (by: Friday)
+2.[E][ ] team meeting (from: Monday 2pm to: 4pm)
+Bye. Hope to see you again soon!
+```
+
+### Expected data file
+
+```text
+D | 0 | return book | Friday
+E | 0 | team meeting | Monday 2pm | 4pm
+```
+
+## TC14 — Start safely when the data file is missing
+
+**Aim:** Verify that the chatbot starts with an empty task list when no data file exists.
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC15 — Reject a saved task with missing fields
+
+**Aim:** Verify that an incomplete saved event produces a clear loading error and an empty task list instead of crashing.
+
+### Initial data file
+
+```text
+E | 0 | project meeting | Monday 2pm
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 1 (event must contain 5 fields). I started with an empty list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC16 — Reject an invalid saved status
+
+**Aim:** Verify that a done status other than 0 or 1 produces a clear loading error and an empty task list.
+
+### Initial data file
+
+```text
+T | yes | read book
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 1 (status must be 0 or 1). I started with an empty list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC17 — Reject an unknown saved task type
+
+**Aim:** Verify that an unknown type on a later line reports its line number and discards tasks loaded before the error.
+
+### Initial data file
+
+```text
+T | 0 | read book
+X | 0 | mystery task
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 2 (unknown task type 'X'). I started with an empty list.
 Here are the tasks in your list:
 Bye. Hope to see you again soon!
 ```

@@ -17,12 +17,12 @@ public class Task {
 
     /** Marks this task as done. */
     public void mark() {
-        isDone = true;
+        this.isDone = true;
     }
 
     /** Marks this task as not done. */
     public void unmark() {
-        isDone = false;
+        this.isDone = false;
     }
 
     /**
@@ -32,6 +32,15 @@ public class Task {
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
+    }
+
+    /**
+     * Returns the common task fields used when saving this task.
+     *
+     * @return done status and description in storage format
+     */
+    public String toFileString() {
+        return (isDone ? "1" : "0") + " | " + description;
     }
 
     @Override

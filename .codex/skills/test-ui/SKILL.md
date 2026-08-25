@@ -13,9 +13,16 @@ that file before running the tests. Every case must contain:
 - an `Inputs` fenced text block containing commands in entry order; and
 - an `Expected output` fenced text block containing the response lines in order.
 
-Each test case starts a fresh chatbot process. The runner ignores indentation,
-blank lines, separator-only lines, and the startup banner through the first
-separator. All remaining output must exactly match the expected response lines.
+When persistence is part of the behavior under test, a case may also contain an
+`Expected data file` fenced text block. The runner compares it exactly with the
+generated `data/duke.txt` file. An `Initial data file` fenced text block seeds
+that file before startup when loading behavior needs to be tested.
+
+Each test case starts a fresh chatbot process in an isolated temporary working
+directory, so storage tests do not overwrite project data. The runner ignores
+indentation, blank lines, separator-only lines, and the startup banner through
+the first separator. All remaining output must exactly match the expected
+response lines.
 
 From the repository root, run:
 
