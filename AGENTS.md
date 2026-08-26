@@ -37,6 +37,10 @@ Java Style Guide only for topics the SE-EDU standard does not cover.
 
 ## Git
 
+Before proposing or creating any future commit or branch, invoke the project-specific `seedu-git-standard` skill
+and follow its SE-EDU Git conventions reference. Review the relevant diff before drafting a message, and verify the
+subject and any required body against the skill before committing.
+
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
