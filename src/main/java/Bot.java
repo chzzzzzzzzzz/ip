@@ -1,12 +1,25 @@
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
  * A simple chatbot that stores and displays tasks until the user says goodbye.
  */
 public class Bot {
+    private static final DateTimeFormatter DEADLINE_INPUT_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter EVENT_INPUT_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DATE_DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+
     /**
      * Starts the chatbot and handles commands entered by the user.
      *
@@ -52,7 +65,7 @@ public class Bot {
 
                 switch (commandType) {
                     case LIST: {
-                        ensureNoArguments(arguments, "list");
+                        ensureNoArguments(arguments);
                         printTaskList(tasks);
                         break;
                     }
@@ -98,6 +111,11 @@ public class Bot {
                         tasks.add(task);
                         storage.saveTasks(tasks);
                         printTaskAdded(task, tasks.size());
+                        break;
+                    }
+                    case ON: {
+                        LocalDate date = parseDateQuery(arguments);
+                        printTasksOnDate(tasks, date);
                         break;
                     }
                     case BYE: {
@@ -162,6 +180,28 @@ public class Bot {
     }
 
     /**
+     * Displays deadlines and events that occur on a specified date.
+     * Original task numbers are preserved so they can be used with other commands.
+     *
+     * @param tasks list containing all tasks
+     * @param date date to search for
+     */
+    private static void printTasksOnDate(ArrayList<Task> tasks, LocalDate date) {
+        System.out.println("    Here are the deadlines and events on "
+                + date.format(DATE_DISPLAY_FORMAT) + ":");
+        boolean hasMatch = false;
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).occursOn(date)) {
+                System.out.println(String.format("    %d.%s", i + 1, tasks.get(i)));
+                hasMatch = true;
+            }
+        }
+        if (!hasMatch) {
+            System.out.println("    No deadlines or events found.");
+        }
+    }
+
+    /**
      * Creates a todo after checking that it has a description.
      *
      * @param arguments text following the todo command
@@ -189,7 +229,7 @@ public class Bot {
 
         int byPosition = arguments.indexOf("/by");
         if (byPosition < 0) {
-            throw new BotException("A deadline must include /by followed by its date or time.");
+            throw new BotException("A deadline must include /by followed by its date.");
         }
 
         String description = arguments.substring(0, byPosition).trim();
@@ -198,9 +238,15 @@ public class Bot {
             throw new BotException("The description of a deadline cannot be empty.");
         }
         if (by.isEmpty()) {
-            throw new BotException("The date or time of a deadline cannot be empty.");
+            throw new BotException("The date of a deadline cannot be empty.");
         }
-        return new Deadline(description, by);
+        try {
+            LocalDate byDate = LocalDate.parse(by, DEADLINE_INPUT_FORMAT);
+            return new Deadline(description, byDate);
+        } catch (DateTimeParseException error) {
+            throw new BotException(
+                    "Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.");
+        }
     }
 
     /**
@@ -237,7 +283,37 @@ public class Bot {
         if (to.isEmpty()) {
             throw new BotException("The end time of an event cannot be empty.");
         }
-        return new Event(description, from, to);
+        try {
+            LocalDateTime fromDateTime = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
+            LocalDateTime toDateTime = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
+            if (!toDateTime.isAfter(fromDateTime)) {
+                throw new BotException(
+                        "The event end date and time must be after its start date and time.");
+            }
+            return new Event(description, fromDateTime, toDateTime);
+        } catch (DateTimeParseException error) {
+            throw new BotException(
+                    "Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.");
+        }
+    }
+
+    /**
+     * Parses the date supplied to the on command.
+     *
+     * @param arguments date text following the on command
+     * @return parsed search date
+     * @throws BotException if the date is missing or invalid
+     */
+    private static LocalDate parseDateQuery(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("Tell me which date to search using yyyy-MM-dd.");
+        }
+        try {
+            return LocalDate.parse(arguments, DEADLINE_INPUT_FORMAT);
+        } catch (DateTimeParseException error) {
+            throw new BotException(
+                    "Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.");
+        }
     }
 
     /**
@@ -275,12 +351,11 @@ public class Bot {
      * Checks that a command which takes no arguments was entered correctly.
      *
      * @param arguments text following the command
-     * @param command command being checked
      * @throws BotException if extra text was supplied
      */
-    private static void ensureNoArguments(String arguments, String command) throws BotException {
+    private static void ensureNoArguments(String arguments) throws BotException {
         if (!arguments.isEmpty()) {
-            throw new BotException("The " + command + " command does not take extra information.");
+            throw new BotException("The " + "list" + " command does not take extra information.");
         }
     }
 }
