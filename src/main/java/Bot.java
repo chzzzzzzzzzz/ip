@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -40,11 +39,11 @@ public class Bot {
         System.out.println("What can I do for you?");
         System.out.println(line);
         Storage storage = new Storage(new File("./data/duke.txt"));
-        ArrayList<Task> tasks;
+        TaskList tasks;
         try {
             tasks = storage.loadTasks();
         } catch (IOException error) {
-            tasks = new ArrayList<>();
+            tasks = new TaskList();
             System.out.println("    OOPS!!! I couldn't load your data file: " + error.getMessage()
                     + ". I started with an empty list.");
         }
@@ -71,23 +70,23 @@ public class Bot {
                     }
                     case MARK: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "mark");
-                        tasks.get(taskIndex).mark();
+                        Task task = tasks.mark(taskIndex);
                         storage.saveTasks(tasks);
                         System.out.println("    Nice! I've marked this task as done:");
-                        System.out.println("        " + tasks.get(taskIndex));
+                        System.out.println("        " + task);
                         break;
                     }
                     case UNMARK: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "unmark");
-                        tasks.get(taskIndex).unmark();
+                        Task task = tasks.unmark(taskIndex);
                         storage.saveTasks(tasks);
                         System.out.println("    OK, I've marked this task as not done yet:");
-                        System.out.println("        " + tasks.get(taskIndex));
+                        System.out.println("        " + task);
                         break;
                     }
                     case DELETE: {
                         int taskIndex = parseTaskIndex(arguments, tasks.size(), "delete");
-                        Task taskRemoved = tasks.remove(taskIndex);
+                        Task taskRemoved = tasks.delete(taskIndex);
                         storage.saveTasks(tasks);
                         printTaskDeleted(taskRemoved, tasks.size());
                         break;
@@ -147,10 +146,10 @@ public class Bot {
      *
      * @param tasks list containing the tasks
      */
-    private static void printTaskList(ArrayList<Task> tasks) {
+    private static void printTaskList(TaskList tasks) {
         System.out.println("    Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(String.format("    %d.%s", i + 1, tasks.get(i)));
+            System.out.println(String.format("    %d.%s", i + 1, tasks.getTask(i)));
         }
     }
 
@@ -186,13 +185,13 @@ public class Bot {
      * @param tasks list containing all tasks
      * @param date date to search for
      */
-    private static void printTasksOnDate(ArrayList<Task> tasks, LocalDate date) {
+    private static void printTasksOnDate(TaskList tasks, LocalDate date) {
         System.out.println("    Here are the deadlines and events on "
                 + date.format(DATE_DISPLAY_FORMAT) + ":");
         boolean hasMatch = false;
         for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).occursOn(date)) {
-                System.out.println(String.format("    %d.%s", i + 1, tasks.get(i)));
+            if (tasks.getTask(i).occursOn(date)) {
+                System.out.println(String.format("    %d.%s", i + 1, tasks.getTask(i)));
                 hasMatch = true;
             }
         }

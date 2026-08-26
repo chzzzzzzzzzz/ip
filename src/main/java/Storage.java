@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -28,8 +27,8 @@ public class Storage {
      * @return tasks stored in the data file, or an empty list if the file does not exist
      * @throws IOException if the data file cannot be read or contains an unknown task type
      */
-    public ArrayList<Task> loadTasks() throws IOException {
-        ArrayList<Task> tasks = new ArrayList<>();
+    public TaskList loadTasks() throws IOException {
+        TaskList tasks = new TaskList();
         if (!path.exists()) {
             return tasks;
         }
@@ -173,7 +172,7 @@ public class Storage {
      * @param tasks tasks to save
      * @throws IOException if the directory or file cannot be written
      */
-    public void saveTasks(ArrayList<Task> tasks) throws IOException {
+    public void saveTasks(TaskList tasks) throws IOException {
         File parentDirectory = path.getParentFile();
         if (parentDirectory != null) {
             if (!parentDirectory.exists() && !parentDirectory.mkdirs()) {
