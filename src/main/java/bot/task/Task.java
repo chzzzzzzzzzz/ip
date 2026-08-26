@@ -1,6 +1,7 @@
 package bot.task;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 /**
  * Represents a task that can be marked as done or not done.
@@ -56,6 +57,16 @@ public class Task {
      */
     public boolean occursOn(LocalDate date) {
         return false;
+    }
+
+    /**
+     * Checks whether this task's description contains a keyword, ignoring case.
+     *
+     * @param keyword keyword to search for.
+     * @return {@code true} if the description contains the keyword
+     */
+    public boolean hasKeyword(String keyword) {
+        return description.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 
     /**

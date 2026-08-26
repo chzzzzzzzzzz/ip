@@ -115,6 +115,21 @@ public class Ui {
     }
 
     /**
+     * Displays tasks that match a find command in their original order.
+     *
+     * @param matchingTasks matching tasks to display.
+     */
+    public void showMatchingTasks(TaskList matchingTasks) {
+        System.out.println("    Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.println(String.format("    %d.%s", i + 1, matchingTasks.getTask(i)));
+        }
+        if (matchingTasks.size() == 0) {
+            System.out.println("    No matching tasks found.");
+        }
+    }
+
+    /**
      * Displays confirmation that a task was added.
      *
      * @param task task that was added.

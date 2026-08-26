@@ -153,6 +153,20 @@ public final class Parser {
     }
 
     /**
+     * Parses the keyword supplied to the find command.
+     *
+     * @param arguments keyword text following the find command.
+     * @return validated search keyword
+     * @throws BotException if the keyword is empty
+     */
+    public static String parseFindKeyword(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("Tell me what keyword to find.");
+        }
+        return arguments;
+    }
+
+    /**
      * Converts a one-based task number into a valid zero-based index.
      *
      * @param arguments task number entered by the user.

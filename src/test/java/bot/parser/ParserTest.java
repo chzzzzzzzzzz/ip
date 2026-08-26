@@ -167,6 +167,17 @@ class ParserTest {
     }
 
     @Test
+    void parseFindKeyword_validKeyword_returnsKeyword() throws BotException {
+        assertEquals("read book", Parser.parseFindKeyword("read book"));
+    }
+
+    @Test
+    void parseFindKeyword_emptyKeyword_throwsException() {
+        assertBotException("Tell me what keyword to find.",
+                () -> Parser.parseFindKeyword(""));
+    }
+
+    @Test
     void parseTaskIndex_firstTaskNumber_returnsFirstArrayIndex() throws BotException {
         assertEquals(0, Parser.parseTaskIndex("1", 3, "mark"));
     }

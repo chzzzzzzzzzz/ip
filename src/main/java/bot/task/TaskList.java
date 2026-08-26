@@ -81,6 +81,23 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
+     * Returns tasks whose descriptions contain the given keyword.
+     * Matching is case-insensitive and preserves the original task order.
+     *
+     * @param keyword keyword to search for.
+     * @return new task list containing matching tasks
+     */
+    public TaskList find(String keyword) {
+        TaskList matchingTasks = new TaskList();
+        for (Task task : tasks) {
+            if (task.hasKeyword(keyword)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
+    }
+
+    /**
      * Returns a read-only iterator over the tasks for operations such as saving.
      *
      * @return iterator over tasks in list order

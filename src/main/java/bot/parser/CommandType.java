@@ -18,6 +18,8 @@ public enum CommandType {
     DEADLINE,
     /** Adds a task with a start and end time. */
     EVENT,
+    /** Finds tasks whose descriptions contain a keyword. */
+    FIND,
     /** Displays dated tasks occurring on a specified date. */
     ON,
     /** Ends the chatbot session. */
