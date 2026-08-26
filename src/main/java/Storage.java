@@ -1,6 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -78,16 +81,22 @@ public class Storage {
             case "D":
                 ensureFieldCount(parts, 4, lineNumber, "deadline");
                 if (parts[3].isEmpty()) {
-                    throw invalidData(lineNumber, "deadline date or time cannot be empty");
+                    throw invalidData(lineNumber, "deadline date cannot be empty");
                 }
-                task = new Deadline(description, parts[3]);
+
+                task = new Deadline(description, parseDeadlineDate(parts[3], lineNumber));
                 break;
             case "E":
                 ensureFieldCount(parts, 5, lineNumber, "event");
                 if (parts[3].isEmpty() || parts[4].isEmpty()) {
                     throw invalidData(lineNumber, "event start and end times cannot be empty");
                 }
-                task = new Event(description, parts[3], parts[4]);
+                LocalDateTime from = parseEventDateTime(parts[3], lineNumber);
+                LocalDateTime to = parseEventDateTime(parts[4], lineNumber);
+                if (!to.isAfter(from)) {
+                    throw invalidData(lineNumber, "event end must be after its start");
+                }
+                task = new Event(description, from, to);
                 break;
             default:
                 throw invalidData(lineNumber, "unknown task type '" + type + "'");
@@ -97,6 +106,38 @@ public class Storage {
             task.mark();
         }
         return task;
+    }
+
+    /**
+     * Parses a deadline date stored in ISO format.
+     *
+     * @param value saved date text
+     * @param lineNumber one-based data-file line number
+     * @return parsed deadline date
+     * @throws IOException if the saved date is invalid
+     */
+    private LocalDate parseDeadlineDate(String value, int lineNumber) throws IOException {
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException error) {
+            throw invalidData(lineNumber, "deadline date must use yyyy-MM-dd");
+        }
+    }
+
+    /**
+     * Parses an event date and time stored in ISO format.
+     *
+     * @param value saved date-time text
+     * @param lineNumber one-based data-file line number
+     * @return parsed event date and time
+     * @throws IOException if the saved date and time are invalid
+     */
+    private LocalDateTime parseEventDateTime(String value, int lineNumber) throws IOException {
+        try {
+            return LocalDateTime.parse(value);
+        } catch (DateTimeParseException error) {
+            throw invalidData(lineNumber, "event date and time must use ISO format");
+        }
     }
 
     /**

@@ -15,8 +15,8 @@ the chatbot starts.
 
 ```text
 todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-12-02
+event project meeting /from 2019-12-02 1400 /to 2019-12-02 1600
 list
 bye
 ```
@@ -28,15 +28,15 @@ Got it. I've added this task:
 [T][ ] borrow book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[D][ ] return book (by: Sunday)
+[D][ ] return book (by: Dec 02 2019)
 Now you have 2 tasks in the list.
 Got it. I've added this task:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Dec 02 2019, 2:00PM to: Dec 02 2019, 4:00PM)
 Now you have 3 tasks in the list.
 Here are the tasks in your list:
 1.[T][ ] borrow book
-2.[D][ ] return book (by: Sunday)
-3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+2.[D][ ] return book (by: Dec 02 2019)
+3.[E][ ] project meeting (from: Dec 02 2019, 2:00PM to: Dec 02 2019, 4:00PM)
 Bye. Hope to see you again soon!
 ```
 
@@ -48,7 +48,7 @@ Bye. Hope to see you again soon!
 
 ```text
 todo read book
-deadline return book /by Friday
+deadline return book /by 2019-12-06
 mark 1
 mark 2
 unmark 2
@@ -63,37 +63,37 @@ Got it. I've added this task:
 [T][ ] read book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[D][ ] return book (by: Friday)
+[D][ ] return book (by: Dec 06 2019)
 Now you have 2 tasks in the list.
 Nice! I've marked this task as done:
 [T][X] read book
 Nice! I've marked this task as done:
-[D][X] return book (by: Friday)
+[D][X] return book (by: Dec 06 2019)
 OK, I've marked this task as not done yet:
-[D][ ] return book (by: Friday)
+[D][ ] return book (by: Dec 06 2019)
 Here are the tasks in your list:
 1.[T][X] read book
-2.[D][ ] return book (by: Friday)
+2.[D][ ] return book (by: Dec 06 2019)
 Bye. Hope to see you again soon!
 ```
 
-## TC3 — Preserve arbitrary deadline text
+## TC3 — Reject invalid deadline dates
 
-**Aim:** Verify that deadline date and time information is stored as unrestricted text.
+**Aim:** Verify that deadline dates must use the supported format and represent real calendar dates.
 
 ### Inputs
 
 ```text
 deadline do homework /by no idea :-p
+deadline submit report /by 2019-02-29
 bye
 ```
 
 ### Expected output
 
 ```text
-Got it. I've added this task:
-[D][ ] do homework (by: no idea :-p)
-Now you have 1 tasks in the list.
+OOPS!!! Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.
+OOPS!!! Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.
 Bye. Hope to see you again soon!
 ```
 
@@ -134,18 +134,24 @@ event meeting /to 4pm
 event meeting /from Mon
 event meeting /from /to 4pm
 event meeting /from Mon /to
+deadline do homework /by 02/12/2019
+event meeting /from 2019-12-02 1400 /to 4pm
+event meeting /from 2019-12-02 1600 /to 2019-12-02 1400
 bye
 ```
 
 ### Expected output
 
 ```text
-OOPS!!! A deadline must include /by followed by its date or time.
-OOPS!!! The date or time of a deadline cannot be empty.
+OOPS!!! A deadline must include /by followed by its date.
+OOPS!!! The date of a deadline cannot be empty.
 OOPS!!! An event must include /from followed by its start time.
 OOPS!!! An event must include /to followed by its end time.
 OOPS!!! The start time of an event cannot be empty.
 OOPS!!! The end time of an event cannot be empty.
+OOPS!!! Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.
+OOPS!!! Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.
+OOPS!!! The event end date and time must be after its start date and time.
 Bye. Hope to see you again soon!
 ```
 
@@ -215,8 +221,8 @@ Bye. Hope to see you again soon!
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 todo borrow book
 delete 2
 list
@@ -230,20 +236,20 @@ Got it. I've added this task:
 [T][ ] read book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[D][ ] return book (by: June 6th)
+[D][ ] return book (by: Jun 06 2019)
 Now you have 2 tasks in the list.
 Got it. I've added this task:
-[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
 Now you have 3 tasks in the list.
 Got it. I've added this task:
 [T][ ] borrow book
 Now you have 4 tasks in the list.
 Noted. I've removed this task:
-[D][ ] return book (by: June 6th)
+[D][ ] return book (by: Jun 06 2019)
 Now you have 3 tasks in the list.
 Here are the tasks in your list:
 1.[T][ ] read book
-2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+2.[E][ ] project meeting (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
 3.[T][ ] borrow book
 Bye. Hope to see you again soon!
 ```
@@ -292,8 +298,8 @@ Bye. Hope to see you again soon!
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 mark 1
 bye
 ```
@@ -305,10 +311,10 @@ Got it. I've added this task:
 [T][ ] read book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[D][ ] return book (by: June 6th)
+[D][ ] return book (by: Jun 06 2019)
 Now you have 2 tasks in the list.
 Got it. I've added this task:
-[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
 Now you have 3 tasks in the list.
 Nice! I've marked this task as done:
 [T][X] read book
@@ -319,8 +325,8 @@ Bye. Hope to see you again soon!
 
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
-E | 0 | project meeting | Aug 6th 2pm | 4pm
+D | 0 | return book | 2019-06-06
+E | 0 | project meeting | 2019-08-06T14:00 | 2019-08-06T16:00
 ```
 
 ## TC11 — Save after unmarking and deleting
@@ -331,7 +337,7 @@ E | 0 | project meeting | Aug 6th 2pm | 4pm
 
 ```text
 todo read book
-deadline return book /by Friday
+deadline return book /by 2019-12-06
 mark 1
 unmark 1
 delete 2
@@ -345,14 +351,14 @@ Got it. I've added this task:
 [T][ ] read book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[D][ ] return book (by: Friday)
+[D][ ] return book (by: Dec 06 2019)
 Now you have 2 tasks in the list.
 Nice! I've marked this task as done:
 [T][X] read book
 OK, I've marked this task as not done yet:
 [T][ ] read book
 Noted. I've removed this task:
-[D][ ] return book (by: Friday)
+[D][ ] return book (by: Dec 06 2019)
 Now you have 1 tasks in the list.
 Bye. Hope to see you again soon!
 ```
@@ -371,8 +377,8 @@ T | 0 | read book
 
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
-E | 1 | project meeting | Aug 6th 2pm | 4pm
+D | 0 | return book | 2019-06-06
+E | 1 | project meeting | 2019-08-06T14:00 | 2019-08-06T16:00
 ```
 
 ### Inputs
@@ -387,8 +393,8 @@ bye
 ```text
 Here are the tasks in your list:
 1.[T][X] read book
-2.[D][ ] return book (by: June 6th)
-3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
+2.[D][ ] return book (by: Jun 06 2019)
+3.[E][X] project meeting (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
 Bye. Hope to see you again soon!
 ```
 
@@ -400,7 +406,7 @@ Bye. Hope to see you again soon!
 
 ```text
 T | 0 | read book
-D | 1 | return book | Friday
+D | 1 | return book | 2019-12-06
 ```
 
 ### Inputs
@@ -408,7 +414,7 @@ D | 1 | return book | Friday
 ```text
 unmark 2
 delete 1
-event team meeting /from Monday 2pm /to 4pm
+event team meeting /from 2019-12-09 1400 /to 2019-12-09 1600
 list
 bye
 ```
@@ -417,24 +423,24 @@ bye
 
 ```text
 OK, I've marked this task as not done yet:
-[D][ ] return book (by: Friday)
+[D][ ] return book (by: Dec 06 2019)
 Noted. I've removed this task:
 [T][ ] read book
 Now you have 1 tasks in the list.
 Got it. I've added this task:
-[E][ ] team meeting (from: Monday 2pm to: 4pm)
+[E][ ] team meeting (from: Dec 09 2019, 2:00PM to: Dec 09 2019, 4:00PM)
 Now you have 2 tasks in the list.
 Here are the tasks in your list:
-1.[D][ ] return book (by: Friday)
-2.[E][ ] team meeting (from: Monday 2pm to: 4pm)
+1.[D][ ] return book (by: Dec 06 2019)
+2.[E][ ] team meeting (from: Dec 09 2019, 2:00PM to: Dec 09 2019, 4:00PM)
 Bye. Hope to see you again soon!
 ```
 
 ### Expected data file
 
 ```text
-D | 0 | return book | Friday
-E | 0 | team meeting | Monday 2pm | 4pm
+D | 0 | return book | 2019-12-06
+E | 0 | team meeting | 2019-12-09T14:00 | 2019-12-09T16:00
 ```
 
 ## TC14 — Start safely when the data file is missing
@@ -462,7 +468,7 @@ Bye. Hope to see you again soon!
 ### Initial data file
 
 ```text
-E | 0 | project meeting | Monday 2pm
+E | 0 | project meeting | 2019-12-02T14:00
 ```
 
 ### Inputs
@@ -527,6 +533,56 @@ bye
 
 ```text
 OOPS!!! I couldn't load your data file: invalid data on line 2 (unknown task type 'X'). I started with an empty list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC18 — Reject an invalid saved deadline date
+
+**Aim:** Verify that a malformed saved deadline date produces a clear loading error instead of crashing.
+
+### Initial data file
+
+```text
+D | 0 | return book | 06-06-2019
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 1 (deadline date must use yyyy-MM-dd). I started with an empty list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
+
+## TC19 — Reject an invalid saved event range
+
+**Aim:** Verify that a saved event whose end is not after its start is rejected during loading.
+
+### Initial data file
+
+```text
+E | 0 | project meeting | 2019-12-02T16:00 | 2019-12-02T14:00
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 1 (event end must be after its start). I started with an empty list.
 Here are the tasks in your list:
 Bye. Hope to see you again soon!
 ```
