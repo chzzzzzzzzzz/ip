@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -16,6 +17,8 @@ public class Bot {
             DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter EVENT_INPUT_FORMAT =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DATE_DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
     /**
      * Starts the chatbot and handles commands entered by the user.
@@ -110,6 +113,11 @@ public class Bot {
                         printTaskAdded(task, tasks.size());
                         break;
                     }
+                    case ON: {
+                        LocalDate date = parseDateQuery(arguments);
+                        printTasksOnDate(tasks, date);
+                        break;
+                    }
                     case BYE: {
                         throw new BotException("Use bye without any extra words.");
                     }
@@ -169,6 +177,28 @@ public class Bot {
         System.out.println("    Noted. I've removed this task:");
         System.out.println("        " + task);
         System.out.println("    Now you have " + taskCount + " tasks in the list.");
+    }
+
+    /**
+     * Displays deadlines and events that occur on a specified date.
+     * Original task numbers are preserved so they can be used with other commands.
+     *
+     * @param tasks list containing all tasks
+     * @param date date to search for
+     */
+    private static void printTasksOnDate(ArrayList<Task> tasks, LocalDate date) {
+        System.out.println("    Here are the deadlines and events on "
+                + date.format(DATE_DISPLAY_FORMAT) + ":");
+        boolean hasMatch = false;
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).occursOn(date)) {
+                System.out.println(String.format("    %d.%s", i + 1, tasks.get(i)));
+                hasMatch = true;
+            }
+        }
+        if (!hasMatch) {
+            System.out.println("    No deadlines or events found.");
+        }
     }
 
     /**
@@ -264,6 +294,25 @@ public class Bot {
         } catch (DateTimeParseException error) {
             throw new BotException(
                     "Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.");
+        }
+    }
+
+    /**
+     * Parses the date supplied to the on command.
+     *
+     * @param arguments date text following the on command
+     * @return parsed search date
+     * @throws BotException if the date is missing or invalid
+     */
+    private static LocalDate parseDateQuery(String arguments) throws BotException {
+        if (arguments.isEmpty()) {
+            throw new BotException("Tell me which date to search using yyyy-MM-dd.");
+        }
+        try {
+            return LocalDate.parse(arguments, DEADLINE_INPUT_FORMAT);
+        } catch (DateTimeParseException error) {
+            throw new BotException(
+                    "Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.");
         }
     }
 

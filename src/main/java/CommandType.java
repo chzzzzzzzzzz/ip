@@ -6,6 +6,7 @@ public enum CommandType {
     TODO,
     DEADLINE,
     EVENT,
+    ON,
     BYE,
     UNKNOWN;
 

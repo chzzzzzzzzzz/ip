@@ -586,3 +586,64 @@ OOPS!!! I couldn't load your data file: invalid data on line 1 (event end must b
 Here are the tasks in your list:
 Bye. Hope to see you again soon!
 ```
+
+## TC20 — Find deadlines and events on a date
+
+**Aim:** Verify that the on command finds deadlines on the exact date and events spanning that date while preserving their original task numbers.
+
+### Inputs
+
+```text
+todo buy milk
+deadline submit report /by 2019-12-02
+event conference /from 2019-12-01 0900 /to 2019-12-03 1700
+event workshop /from 2019-12-04 0900 /to 2019-12-04 1200
+on 2019-12-02
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] buy milk
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] submit report (by: Dec 02 2019)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[E][ ] conference (from: Dec 01 2019, 9:00AM to: Dec 03 2019, 5:00PM)
+Now you have 3 tasks in the list.
+Got it. I've added this task:
+[E][ ] workshop (from: Dec 04 2019, 9:00AM to: Dec 04 2019, 12:00PM)
+Now you have 4 tasks in the list.
+Here are the deadlines and events on Dec 02 2019:
+2.[D][ ] submit report (by: Dec 02 2019)
+3.[E][ ] conference (from: Dec 01 2019, 9:00AM to: Dec 03 2019, 5:00PM)
+Bye. Hope to see you again soon!
+```
+
+## TC21 — Handle invalid and unmatched date searches
+
+**Aim:** Verify that the on command handles missing, malformed, impossible, and unmatched dates without terminating the chatbot.
+
+### Inputs
+
+```text
+on
+on 02/12/2019
+on 2019-02-29
+on 2019-12-02
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! Tell me which date to search using yyyy-MM-dd.
+OOPS!!! Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.
+OOPS!!! Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.
+Here are the deadlines and events on Dec 02 2019:
+No deadlines or events found.
+Bye. Hope to see you again soon!
+```
