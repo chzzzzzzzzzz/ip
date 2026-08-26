@@ -1,5 +1,9 @@
 package bot;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+
 import bot.exception.BotException;
 import bot.parser.ParsedCommand;
 import bot.parser.Parser;
@@ -7,10 +11,6 @@ import bot.storage.Storage;
 import bot.task.Task;
 import bot.task.TaskList;
 import bot.ui.Ui;
-
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
 
 /**
  * A simple chatbot that stores and displays tasks until the user says goodbye.
@@ -25,7 +25,7 @@ public class Bot {
     /**
      * Starts the chatbot and handles commands entered by the user.
      *
-     * @param args command-line arguments; not used by this application
+     * @param args command-line arguments; not used by this application.
      */
     public static void main(String[] args) {
         Ui ui = new Ui();

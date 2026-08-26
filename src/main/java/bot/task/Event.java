@@ -12,20 +12,20 @@ public class Event extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma", Locale.ENGLISH);
 
-    private final LocalDateTime from;
-    private final LocalDateTime to;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
 
     /**
      * Creates an event task.
      *
-     * @param description description of the event
-     * @param from date or time at which the event starts
-     * @param to date or time at which the event ends
+     * @param description description of the event.
+     * @param startDateTime date and time at which the event starts.
+     * @param endDateTime date and time at which the event ends.
      */
-    public Event(String description, LocalDateTime from, LocalDateTime to) {
+    public Event(String description, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(description);
-        this.from = from;
-        this.to = to;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
     /**
@@ -35,20 +35,20 @@ public class Event extends Task {
      */
     @Override
     public String toFileString() {
-        return "E | " + super.toFileString() + " | " + from + " | " + to;
+        return "E | " + super.toFileString() + " | " + startDateTime + " | " + endDateTime;
     }
 
     /**
      * Checks whether this event is in progress on the specified date.
      * Both the start and end dates are treated as part of the event.
      *
-     * @param date date to check
+     * @param date date to check.
      * @return {@code true} if the date is within the event's date range, inclusive
      */
     @Override
     public boolean occursOn(LocalDate date) {
-        LocalDate startDate = from.toLocalDate();
-        LocalDate endDate = to.toLocalDate();
+        LocalDate startDate = startDateTime.toLocalDate();
+        LocalDate endDate = endDateTime.toLocalDate();
         return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
 
@@ -60,7 +60,7 @@ public class Event extends Task {
     @Override
     public String toString() {
         return "[E]" + super.toString()
-                + " (from: " + from.format(DISPLAY_FORMAT)
-                + " to: " + to.format(DISPLAY_FORMAT) + ")";
+                + " (from: " + startDateTime.format(DISPLAY_FORMAT)
+                + " to: " + endDateTime.format(DISPLAY_FORMAT) + ")";
     }
 }

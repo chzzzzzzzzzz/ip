@@ -28,7 +28,7 @@ public enum CommandType {
     /**
      * Converts a command word into its corresponding command type.
      *
-     * @param command command word entered by the user
+     * @param command command word entered by the user.
      * @return matching command type, or {@link #UNKNOWN} if the word is not recognized
      */
     public static CommandType from(String command) {

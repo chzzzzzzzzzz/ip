@@ -11,9 +11,9 @@ public final class ParsedCommand {
     /**
      * Creates a parsed command.
      *
-     * @param type recognized command type
-     * @param commandWord first word entered by the user
-     * @param arguments text following the command word
+     * @param type recognized command type.
+     * @param commandWord first word entered by the user.
+     * @param arguments text following the command word.
      */
     public ParsedCommand(CommandType type, String commandWord, String arguments) {
         this.type = type;
