@@ -151,7 +151,7 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
     cases = load_test_cases(plan_path)
     javac = java_home / "bin/javac"
     java = java_home / "bin/java"
-    sources = sorted((project_root / "src/main/java").glob("*.java"))
+    sources = sorted((project_root / "src/main/java").rglob("*.java"))
     if not sources:
         print("FAIL: no Java source files found", file=sys.stderr)
         return 1
@@ -186,7 +186,7 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
             print_lines(case.inputs)
             try:
                 result = subprocess.run(
-                    [str(java), "-cp", build_dir, "Bot"],
+                    [str(java), "-cp", build_dir, "bot.Bot"],
                     input=console_input,
                     capture_output=True,
                     text=True,
