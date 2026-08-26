@@ -23,3 +23,26 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Creating and running the executable JAR
+
+Ensure that Java 25 is active, then run the following command from the project root:
+
+```shell
+./gradlew clean shadowJar
+```
+
+On Windows, use `gradlew.bat clean shadowJar` instead. The Shadow plugin packages the application and its runtime
+dependencies into `build/libs/Bot.jar`.
+
+To distribute and run the application:
+
+1. Copy `build/libs/Bot.jar` into an empty folder.
+2. Open a terminal in that folder.
+3. Run `java -jar "Bot.jar"`.
+
+The application stores its data in a `data` folder relative to the folder from which the JAR is run. Keep that
+folder together with the JAR if you want to retain the saved tasks.
+
+Do not commit `Bot.jar` to Git because it is a generated binary. The `build` directory is ignored by this
+repository. To distribute a version through GitHub, create a GitHub release and attach `Bot.jar` to the release.
