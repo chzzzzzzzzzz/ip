@@ -40,3 +40,13 @@ After each code update that can affect chatbot behavior:
 
 1. Update `test/ui-test-plan.md` when the supported behavior or expected output changes.
 2. Invoke the project-specific `test-ui` skill and resolve or report the first failure before handing the change back to the user.
+
+## JUnit testing after code updates
+
+Maintain JUnit tests for approximately the top 50% highest-value methods. Prioritize methods that contain
+complex logic, implement core behavior, validate important input, or protect critical storage and parsing paths
+rather than testing trivial accessors.
+
+After every code change, review the affected classes and update or add JUnit tests as needed to continue meeting
+this coverage target. Run the full JUnit suite with `./gradlew test` using Java 25 before handing the change back
+to the user.
