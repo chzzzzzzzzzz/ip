@@ -98,6 +98,12 @@ public class Bot {
                         ui.showTaskAdded(task, tasks.size());
                         break;
                     }
+                    case FIND: {
+                        String keyword = Parser.parseFindKeyword(arguments);
+                        TaskList matchingTasks = tasks.find(keyword);
+                        ui.showMatchingTasks(matchingTasks);
+                        break;
+                    }
                     case ON: {
                         LocalDate date = Parser.parseDateQuery(arguments);
                         ui.showTasksOnDate(tasks, date);

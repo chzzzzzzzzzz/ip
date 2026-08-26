@@ -647,3 +647,68 @@ Here are the deadlines and events on Dec 02 2019:
 No deadlines or events found.
 Bye. Hope to see you again soon!
 ```
+
+## TC22 — Find tasks by description keyword
+
+**Aim:** Verify that find matches task descriptions case-insensitively, preserves their order, and does not search date fields.
+
+### Inputs
+
+```text
+todo Read Book
+deadline return book /by 2019-06-06
+event book club /from 2019-08-06 1400 /to 2019-08-06 1600
+todo buy milk
+find BoO
+find 2019
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] Read Book
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[D][ ] return book (by: Jun 06 2019)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[E][ ] book club (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
+Now you have 3 tasks in the list.
+Got it. I've added this task:
+[T][ ] buy milk
+Now you have 4 tasks in the list.
+Here are the matching tasks in your list:
+1.[T][ ] Read Book
+2.[D][ ] return book (by: Jun 06 2019)
+3.[E][ ] book club (from: Aug 06 2019, 2:00PM to: Aug 06 2019, 4:00PM)
+Here are the matching tasks in your list:
+No matching tasks found.
+Bye. Hope to see you again soon!
+```
+
+## TC23 — Handle a missing or multi-word find keyword
+
+**Aim:** Verify that find rejects an empty keyword without terminating and accepts a multi-word keyword afterward.
+
+### Inputs
+
+```text
+find
+todo read book today
+find read book
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! Tell me what keyword to find.
+Got it. I've added this task:
+[T][ ] read book today
+Now you have 1 tasks in the list.
+Here are the matching tasks in your list:
+1.[T][ ] read book today
+Bye. Hope to see you again soon!
+```
