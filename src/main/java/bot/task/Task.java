@@ -58,6 +58,11 @@ public class Task {
         return false;
     }
 
+    /**
+     * Returns the task's completion status and description for display.
+     *
+     * @return display representation of the task
+     */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

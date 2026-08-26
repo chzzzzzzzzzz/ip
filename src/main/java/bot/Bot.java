@@ -17,6 +17,12 @@ import java.time.LocalDate;
  */
 public class Bot {
     /**
+     * Creates a chatbot application entry point.
+     */
+    public Bot() {
+    }
+
+    /**
      * Starts the chatbot and handles commands entered by the user.
      *
      * @param args command-line arguments; not used by this application

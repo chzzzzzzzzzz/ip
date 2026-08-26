@@ -13,11 +13,21 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Returns the todo in the format used by the storage file.
+     *
+     * @return storage representation containing the todo task type
+     */
     @Override
     public String toFileString() {
         return "T | " + super.toFileString();
     }
 
+    /**
+     * Returns the todo's type, status, and description for display.
+     *
+     * @return display representation of the todo
+     */
     @Override
     public String toString() {
         return "[T]" + super.toString();
