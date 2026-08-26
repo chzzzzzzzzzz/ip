@@ -28,7 +28,18 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## Java coding standard
+
+For every task that adds, changes, or reviews Java code, invoke the project-specific
+`seedu-java-coding-standard` skill and follow its SE-EDU basic and intermediate Java coding standard reference.
+Before handing back a Java change, audit all added and modified Java lines against that standard. Use the Google
+Java Style Guide only for topics the SE-EDU standard does not cover.
+
 ## Git
+
+Before proposing or creating any future commit or branch, invoke the project-specific `seedu-git-standard` skill
+and follow its SE-EDU Git conventions reference. Review the relevant diff before drafting a message, and verify the
+subject and any required body against the skill before committing.
 
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.

@@ -12,7 +12,7 @@ public class Task {
     /**
      * Creates a task with the given description and an initial not-done status.
      *
-     * @param description description of the task
+     * @param description description of the task.
      */
     public Task(String description) {
         this.description = description;
@@ -51,7 +51,7 @@ public class Task {
      * Checks whether this task occurs on the given date.
      * Tasks without dates do not occur on any specific date.
      *
-     * @param date date to check
+     * @param date date to check.
      * @return {@code true} if the task occurs on the date
      */
     public boolean occursOn(LocalDate date) {

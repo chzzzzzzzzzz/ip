@@ -1,12 +1,12 @@
 package bot.ui;
 
-import bot.task.Task;
-import bot.task.TaskList;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Scanner;
+
+import bot.task.Task;
+import bot.task.TaskList;
 
 /**
  * Handles console input and output for the chatbot.
@@ -79,7 +79,7 @@ public class Ui {
     /**
      * Displays an error caused by invalid user input.
      *
-     * @param message explanation of the error
+     * @param message explanation of the error.
      */
     public void showError(String message) {
         System.out.println("    OOPS!!! " + message);
@@ -88,7 +88,7 @@ public class Ui {
     /**
      * Displays an error encountered while loading saved tasks.
      *
-     * @param message explanation from the storage layer
+     * @param message explanation from the storage layer.
      */
     public void showLoadingError(String message) {
         System.out.println("    OOPS!!! I couldn't load your data file: " + message
@@ -105,7 +105,7 @@ public class Ui {
     /**
      * Displays all tasks in their current order.
      *
-     * @param tasks task list to display
+     * @param tasks task list to display.
      */
     public void showTaskList(TaskList tasks) {
         System.out.println("    Here are the tasks in your list:");
@@ -117,8 +117,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was added.
      *
-     * @param task task that was added
-     * @param taskCount number of tasks after the addition
+     * @param task task that was added.
+     * @param taskCount number of tasks after the addition.
      */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println("    Got it. I've added this task:");
@@ -129,7 +129,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as done.
      *
-     * @param task task that was marked
+     * @param task task that was marked.
      */
     public void showTaskMarked(Task task) {
         System.out.println("    Nice! I've marked this task as done:");
@@ -139,7 +139,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as not done.
      *
-     * @param task task that was unmarked
+     * @param task task that was unmarked.
      */
     public void showTaskUnmarked(Task task) {
         System.out.println("    OK, I've marked this task as not done yet:");
@@ -149,8 +149,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was deleted.
      *
-     * @param task task that was deleted
-     * @param taskCount number of tasks after deletion
+     * @param task task that was deleted.
+     * @param taskCount number of tasks after deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         System.out.println("    Noted. I've removed this task:");
@@ -162,8 +162,8 @@ public class Ui {
      * Displays deadlines and events that occur on a specified date.
      * Original task numbers are preserved for use with other commands.
      *
-     * @param tasks task list to search and display
-     * @param date date to display tasks for
+     * @param tasks task list to search and display.
+     * @param date date to display tasks for.
      */
     public void showTasksOnDate(TaskList tasks, LocalDate date) {
         System.out.println("    Here are the deadlines and events on "

@@ -11,17 +11,17 @@ public class Deadline extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
-    private final LocalDate by;
+    private final LocalDate dueDate;
 
     /**
      * Creates a deadline task.
      *
-     * @param description description of the task
-     * @param by date by which the task must be completed
+     * @param description description of the task.
+     * @param dueDate date by which the task must be completed.
      */
-    public Deadline(String description, LocalDate by) {
+    public Deadline(String description, LocalDate dueDate) {
         super(description);
-        this.by = by;
+        this.dueDate = dueDate;
     }
 
     /**
@@ -31,18 +31,18 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return "D | " + super.toFileString() + " | " + by;
+        return "D | " + super.toFileString() + " | " + dueDate;
     }
 
     /**
      * Checks whether this deadline falls on the specified date.
      *
-     * @param date date to check
+     * @param date date to check.
      * @return {@code true} if the deadline is on the specified date
      */
     @Override
     public boolean occursOn(LocalDate date) {
-        return by.equals(date);
+        return dueDate.equals(date);
     }
 
     /**
@@ -52,6 +52,6 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_FORMAT) + ")";
+        return "[D]" + super.toString() + " (by: " + dueDate.format(DISPLAY_FORMAT) + ")";
     }
 }

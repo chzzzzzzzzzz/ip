@@ -21,7 +21,7 @@ public class TaskList implements Iterable<Task> {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -30,7 +30,7 @@ public class TaskList implements Iterable<Task> {
     /**
      * Returns the task at a zero-based index.
      *
-     * @param index zero-based task index
+     * @param index zero-based task index.
      * @return task at the index
      */
     public Task getTask(int index) {
@@ -40,7 +40,7 @@ public class TaskList implements Iterable<Task> {
     /**
      * Deletes and returns the task at a zero-based index.
      *
-     * @param index zero-based task index
+     * @param index zero-based task index.
      * @return deleted task
      */
     public Task delete(int index) {
@@ -50,7 +50,7 @@ public class TaskList implements Iterable<Task> {
     /**
      * Marks the task at a zero-based index as done.
      *
-     * @param index zero-based task index
+     * @param index zero-based task index.
      * @return task that was marked
      */
     public Task mark(int index) {
@@ -62,7 +62,7 @@ public class TaskList implements Iterable<Task> {
     /**
      * Marks the task at a zero-based index as not done.
      *
-     * @param index zero-based task index
+     * @param index zero-based task index.
      * @return task that was unmarked
      */
     public Task unmark(int index) {

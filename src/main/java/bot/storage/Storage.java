@@ -1,11 +1,5 @@
 package bot.storage;
 
-import bot.task.Deadline;
-import bot.task.Event;
-import bot.task.Task;
-import bot.task.TaskList;
-import bot.task.Todo;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,19 +8,25 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+import bot.task.Deadline;
+import bot.task.Event;
+import bot.task.Task;
+import bot.task.TaskList;
+import bot.task.Todo;
+
 /**
  * Loads and saves the chatbot's tasks using a file on disk.
  */
 public class Storage {
-    private final File path;
+    private final File dataFile;
 
     /**
      * Creates storage that writes to the given file.
      *
-     * @param path location of the data file
+     * @param dataFile location of the data file.
      */
-    public Storage(File path) {
-        this.path = path;
+    public Storage(File dataFile) {
+        this.dataFile = dataFile;
     }
 
     /**
@@ -37,11 +37,11 @@ public class Storage {
      */
     public TaskList loadTasks() throws IOException {
         TaskList tasks = new TaskList();
-        if (!path.exists()) {
+        if (!dataFile.exists()) {
             return tasks;
         }
 
-        try (Scanner scanner = new Scanner(path)) {
+        try (Scanner scanner = new Scanner(dataFile)) {
             int lineNumber = 0;
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -58,8 +58,8 @@ public class Storage {
     /**
      * Converts one validated data-file line into a task.
      *
-     * @param line line read from the data file
-     * @param lineNumber one-based line number used in error messages
+     * @param line line read from the data file.
+     * @param lineNumber one-based line number used in error messages.
      * @return task represented by the line
      * @throws IOException if the line does not follow the storage format
      */
@@ -118,8 +118,8 @@ public class Storage {
     /**
      * Parses a deadline date stored in ISO format.
      *
-     * @param value saved date text
-     * @param lineNumber one-based data-file line number
+     * @param value saved date text.
+     * @param lineNumber one-based data-file line number.
      * @return parsed deadline date
      * @throws IOException if the saved date is invalid
      */
@@ -134,8 +134,8 @@ public class Storage {
     /**
      * Parses an event date and time stored in ISO format.
      *
-     * @param value saved date-time text
-     * @param lineNumber one-based data-file line number
+     * @param value saved date-time text.
+     * @param lineNumber one-based data-file line number.
      * @return parsed event date and time
      * @throws IOException if the saved date and time are invalid
      */
@@ -150,10 +150,10 @@ public class Storage {
     /**
      * Checks that a saved task contains exactly the fields required by its type.
      *
-     * @param parts fields parsed from the saved task
-     * @param expectedCount required number of fields
-     * @param lineNumber one-based data-file line number
-     * @param taskType name of the task type for the error message
+     * @param parts fields parsed from the saved task.
+     * @param expectedCount required number of fields.
+     * @param lineNumber one-based data-file line number.
+     * @param taskType name of the task type for the error message.
      * @throws IOException if the field count is incorrect
      */
     private void ensureFieldCount(String[] parts, int expectedCount, int lineNumber, String taskType)
@@ -166,8 +166,8 @@ public class Storage {
     /**
      * Creates a consistently formatted exception for invalid saved data.
      *
-     * @param lineNumber one-based data-file line number
-     * @param reason explanation of the format problem
+     * @param lineNumber one-based data-file line number.
+     * @param reason explanation of the format problem.
      * @return exception describing the malformed line
      */
     private IOException invalidData(int lineNumber, String reason) {
@@ -177,11 +177,11 @@ public class Storage {
     /**
      * Overwrites the data file with the current task list.
      *
-     * @param tasks tasks to save
+     * @param tasks tasks to save.
      * @throws IOException if the directory or file cannot be written
      */
     public void saveTasks(TaskList tasks) throws IOException {
-        File parentDirectory = path.getParentFile();
+        File parentDirectory = dataFile.getParentFile();
         if (parentDirectory != null) {
             if (!parentDirectory.exists() && !parentDirectory.mkdirs()) {
                 throw new IOException("Could not create data directory: " + parentDirectory);
@@ -191,7 +191,7 @@ public class Storage {
             }
         }
 
-        try (FileWriter writer = new FileWriter(path)) {
+        try (FileWriter writer = new FileWriter(dataFile)) {
             for (Task task : tasks) {
                 writer.write(task.toFileString() + System.lineSeparator());
             }

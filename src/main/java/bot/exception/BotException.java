@@ -7,7 +7,7 @@ public class BotException extends Exception {
     /**
      * Creates an exception with an explanation suitable for showing to the user.
      *
-     * @param message explanation of the invalid input
+     * @param message explanation of the invalid input.
      */
     public BotException(String message) {
         super(message);
