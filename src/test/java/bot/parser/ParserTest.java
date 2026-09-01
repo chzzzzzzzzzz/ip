@@ -25,38 +25,38 @@ class ParserTest {
 
     @Test
     void parseDeadline_emptyArguments_throwsException() {
-        assertBotException("The description of a deadline cannot be empty.",
-                () -> Parser.parseDeadline(""));
+        assertBotException("The description of a deadline cannot be empty.", () ->
+                Parser.parseDeadline(""));
     }
 
     @Test
     void parseDeadline_missingByMarker_throwsException() {
-        assertBotException("A deadline must include /by followed by its date.",
-                () -> Parser.parseDeadline("submit report 2019-12-02"));
+        assertBotException("A deadline must include /by followed by its date.", () ->
+                Parser.parseDeadline("submit report 2019-12-02"));
     }
 
     @Test
     void parseDeadline_emptyDescription_throwsException() {
-        assertBotException("The description of a deadline cannot be empty.",
-                () -> Parser.parseDeadline("/by 2019-12-02"));
+        assertBotException("The description of a deadline cannot be empty.", () ->
+                Parser.parseDeadline("/by 2019-12-02"));
     }
 
     @Test
     void parseDeadline_emptyDate_throwsException() {
-        assertBotException("The date of a deadline cannot be empty.",
-                () -> Parser.parseDeadline("submit report /by"));
+        assertBotException("The date of a deadline cannot be empty.", () ->
+                Parser.parseDeadline("submit report /by"));
     }
 
     @Test
     void parseDeadline_wrongDateFormat_throwsException() {
-        assertBotException("Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.",
-                () -> Parser.parseDeadline("submit report /by 02-12-2019"));
+        assertBotException("Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.", () ->
+                Parser.parseDeadline("submit report /by 02-12-2019"));
     }
 
     @Test
     void parseDeadline_nonexistentDate_throwsException() {
-        assertBotException("Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.",
-                () -> Parser.parseDeadline("submit report /by 2019-02-29"));
+        assertBotException("Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.", () ->
+                Parser.parseDeadline("submit report /by 2019-02-29"));
     }
 
     @Test
@@ -79,67 +79,65 @@ class ParserTest {
 
     @Test
     void parseEvent_emptyArguments_throwsException() {
-        assertBotException("The description of an event cannot be empty.",
-                () -> Parser.parseEvent(""));
+        assertBotException("The description of an event cannot be empty.", () ->
+                Parser.parseEvent(""));
     }
 
     @Test
     void parseEvent_missingFromMarker_throwsException() {
-        assertBotException("An event must include /from followed by its start time.",
-                () -> Parser.parseEvent("meeting /to 2019-12-02 1600"));
+        assertBotException("An event must include /from followed by its start time.", () ->
+                Parser.parseEvent("meeting /to 2019-12-02 1600"));
     }
 
     @Test
     void parseEvent_missingToMarker_throwsException() {
-        assertBotException("An event must include /to followed by its end time.",
-                () -> Parser.parseEvent("meeting /from 2019-12-02 1400"));
+        assertBotException("An event must include /to followed by its end time.", () ->
+                Parser.parseEvent("meeting /from 2019-12-02 1400"));
     }
 
     @Test
     void parseEvent_emptyDescription_throwsException() {
-        assertBotException("The description of an event cannot be empty.",
-                () -> Parser.parseEvent("/from 2019-12-02 1400 /to 2019-12-02 1600"));
+        assertBotException("The description of an event cannot be empty.", () ->
+                Parser.parseEvent("/from 2019-12-02 1400 /to 2019-12-02 1600"));
     }
 
     @Test
     void parseEvent_emptyStartTime_throwsException() {
-        assertBotException("The start time of an event cannot be empty.",
-                () -> Parser.parseEvent("meeting /from /to 2019-12-02 1600"));
+        assertBotException("The start time of an event cannot be empty.", () ->
+                Parser.parseEvent("meeting /from /to 2019-12-02 1600"));
     }
 
     @Test
     void parseEvent_emptyEndTime_throwsException() {
-        assertBotException("The end time of an event cannot be empty.",
-                () -> Parser.parseEvent("meeting /from 2019-12-02 1400 /to"));
+        assertBotException("The end time of an event cannot be empty.", () ->
+                Parser.parseEvent("meeting /from 2019-12-02 1400 /to"));
     }
 
     @Test
     void parseEvent_invalidStartTime_throwsException() {
-        assertBotException(
-                "Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.",
-                () -> Parser.parseEvent(
+        assertBotException("Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.", () ->
+                Parser.parseEvent(
                         "meeting /from 2019-12-02 25:00 /to 2019-12-03 1600"));
     }
 
     @Test
     void parseEvent_invalidEndTime_throwsException() {
-        assertBotException(
-                "Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.",
-                () -> Parser.parseEvent(
+        assertBotException("Use yyyy-MM-dd HHmm for event dates and times, e.g. 2019-12-02 1400.", () ->
+                Parser.parseEvent(
                         "meeting /from 2019-12-02 1400 /to 2019-02-29 1600"));
     }
 
     @Test
     void parseEvent_endEqualsStart_throwsException() {
-        assertBotException("The event end date and time must be after its start date and time.",
-                () -> Parser.parseEvent(
+        assertBotException("The event end date and time must be after its start date and time.", () ->
+                Parser.parseEvent(
                         "meeting /from 2019-12-02 1400 /to 2019-12-02 1400"));
     }
 
     @Test
     void parseEvent_endBeforeStart_throwsException() {
-        assertBotException("The event end date and time must be after its start date and time.",
-                () -> Parser.parseEvent(
+        assertBotException("The event end date and time must be after its start date and time.", () ->
+                Parser.parseEvent(
                         "meeting /from 2019-12-02 1600 /to 2019-12-02 1400"));
     }
 
@@ -150,20 +148,20 @@ class ParserTest {
 
     @Test
     void parseDateQuery_emptyDate_throwsException() {
-        assertBotException("Tell me which date to search using yyyy-MM-dd.",
-                () -> Parser.parseDateQuery(""));
+        assertBotException("Tell me which date to search using yyyy-MM-dd.", () ->
+                Parser.parseDateQuery(""));
     }
 
     @Test
     void parseDateQuery_wrongDateFormat_throwsException() {
-        assertBotException("Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.",
-                () -> Parser.parseDateQuery("02-12-2019"));
+        assertBotException("Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.", () ->
+                Parser.parseDateQuery("02-12-2019"));
     }
 
     @Test
     void parseDateQuery_nonexistentDate_throwsException() {
-        assertBotException("Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.",
-                () -> Parser.parseDateQuery("2019-02-29"));
+        assertBotException("Use yyyy-MM-dd when searching by date, e.g. 2019-12-02.", () ->
+                Parser.parseDateQuery("2019-02-29"));
     }
 
     @Test
@@ -173,8 +171,8 @@ class ParserTest {
 
     @Test
     void parseFindKeyword_emptyKeyword_throwsException() {
-        assertBotException("Tell me what keyword to find.",
-                () -> Parser.parseFindKeyword(""));
+        assertBotException("Tell me what keyword to find.", () ->
+                Parser.parseFindKeyword(""));
     }
 
     @Test
@@ -189,32 +187,32 @@ class ParserTest {
 
     @Test
     void parseTaskIndex_emptyArgument_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("", 3, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("", 3, "mark"));
 
         assertEquals("Tell me which task number to mark.", exception.getMessage());
     }
 
     @Test
     void parseTaskIndex_nonNumericArgument_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("two", 3, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("two", 3, "mark"));
 
         assertEquals("The task number must be a whole number.", exception.getMessage());
     }
 
     @Test
     void parseTaskIndex_emptyTaskList_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("1", 0, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("1", 0, "mark"));
 
         assertEquals("The task list is empty.", exception.getMessage());
     }
 
     @Test
     void parseTaskIndex_zeroTaskNumber_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("0", 3, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("0", 3, "mark"));
 
         assertEquals("Task number 0 does not exist. Choose a number from 1 to 3.",
                 exception.getMessage());
@@ -222,8 +220,8 @@ class ParserTest {
 
     @Test
     void parseTaskIndex_negativeTaskNumber_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("-1", 3, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("-1", 3, "mark"));
 
         assertEquals("Task number -1 does not exist. Choose a number from 1 to 3.",
                 exception.getMessage());
@@ -231,8 +229,8 @@ class ParserTest {
 
     @Test
     void parseTaskIndex_taskNumberAboveTaskCount_throwsException() {
-        BotException exception = assertThrows(BotException.class,
-                () -> Parser.parseTaskIndex("4", 3, "mark"));
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("4", 3, "mark"));
 
         assertEquals("Task number 4 does not exist. Choose a number from 1 to 3.",
                 exception.getMessage());
