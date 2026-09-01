@@ -120,6 +120,9 @@ public class Bot {
                                     "I don't know what \"" + command.getCommandWord() + "\" means.");
                         }
                     }
+                    default: {
+                        throw new BotException("I don't know what that command means.");
+                    }
                 }
             } catch (BotException error) {
                 ui.showError(error.getMessage());
