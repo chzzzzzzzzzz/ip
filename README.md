@@ -17,8 +17,8 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, a window titled
    `Bot` should appear and display `Hello World!`.
 
-This first JavaFX increment verifies that the GUI can launch. A later increment can connect the window to the
-existing chatbot logic.
+The JavaFX window provides a scrollable chat area, a command field, and a send button. These controls are visual in
+this increment; a later increment can connect them to the existing chatbot logic.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
@@ -39,7 +39,7 @@ To distribute and run the application:
 2. Open a terminal in that folder.
 3. Run `java -jar "Bot.jar"`.
 
-The current JAR launches the JavaFX setup window. After the chatbot logic is connected to the GUI, saved tasks will
+The current JAR launches the JavaFX chat layout. After the chatbot logic is connected to the GUI, saved tasks will
 continue to use a `data` folder relative to the folder from which the JAR is run.
 
 Do not commit `Bot.jar` to Git because it is a generated binary. The `build` directory is ignored by this
