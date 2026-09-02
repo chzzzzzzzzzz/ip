@@ -18,7 +18,8 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    `Bot` should appear with a chat area, a command field, and a send button.
 
 The JavaFX window provides a scrollable chat area, a command field, and a send button. Pressing Enter or clicking
-Send displays the user's message and Bot's response, then scrolls to the newest dialog automatically.
+Send executes the command, displays the user's message and Bot's response, then scrolls to the newest dialog
+automatically. The GUI supports the same task commands, validation, and file storage as the console interface.
 The responsive layout is defined in `src/main/resources/view` using FXML, while Java controller classes handle
 interaction. Styles in `src/main/resources/css` provide distinct message bubbles and interactive button feedback.
 

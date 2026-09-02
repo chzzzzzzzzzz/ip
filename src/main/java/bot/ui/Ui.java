@@ -1,8 +1,6 @@
 package bot.ui;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Scanner;
 
 import bot.task.Task;
@@ -13,8 +11,6 @@ import bot.task.TaskList;
  */
 public class Ui {
     private static final String LINE = "_".repeat(60);
-    private static final DateTimeFormatter DATE_DISPLAY_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
     private final Scanner scanner;
 
@@ -72,8 +68,17 @@ public class Ui {
      */
     public void showGoodbye() {
         System.out.println(LINE);
-        System.out.println("Bye. Hope to see you again soon!");
+        System.out.println(ResponseFormatter.formatGoodbye());
         System.out.println(LINE);
+    }
+
+    /**
+     * Displays a response with the indentation used by the console interface.
+     *
+     * @param response response to display.
+     */
+    public void showResponse(String response) {
+        response.lines().forEach(line -> System.out.println("    " + line));
     }
 
     /**
@@ -82,7 +87,7 @@ public class Ui {
      * @param message explanation of the error.
      */
     public void showError(String message) {
-        System.out.println("    OOPS!!! " + message);
+        showResponse(ResponseFormatter.formatError(message));
     }
 
     /**
@@ -91,15 +96,14 @@ public class Ui {
      * @param message explanation from the storage layer.
      */
     public void showLoadingError(String message) {
-        System.out.println("    OOPS!!! I couldn't load your data file: " + message
-                + ". I started with an empty list.");
+        showResponse(ResponseFormatter.formatLoadingError(message));
     }
 
     /**
      * Displays an error encountered while saving tasks.
      */
     public void showSavingError() {
-        System.out.println("    OOPS!!! I couldn't save your tasks to the data file.");
+        showResponse(ResponseFormatter.formatSavingError());
     }
 
     /**
@@ -108,10 +112,7 @@ public class Ui {
      * @param tasks task list to display.
      */
     public void showTaskList(TaskList tasks) {
-        System.out.println("    Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(String.format("    %d.%s", i + 1, tasks.getTask(i)));
-        }
+        showResponse(ResponseFormatter.formatTaskList(tasks));
     }
 
     /**
@@ -120,13 +121,7 @@ public class Ui {
      * @param matchingTasks matching tasks to display.
      */
     public void showMatchingTasks(TaskList matchingTasks) {
-        System.out.println("    Here are the matching tasks in your list:");
-        for (int i = 0; i < matchingTasks.size(); i++) {
-            System.out.println(String.format("    %d.%s", i + 1, matchingTasks.getTask(i)));
-        }
-        if (matchingTasks.size() == 0) {
-            System.out.println("    No matching tasks found.");
-        }
+        showResponse(ResponseFormatter.formatMatchingTasks(matchingTasks));
     }
 
     /**
@@ -136,9 +131,7 @@ public class Ui {
      * @param taskCount number of tasks after the addition.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        System.out.println("    Got it. I've added this task:");
-        System.out.println("        " + task);
-        System.out.println("    Now you have " + taskCount + " tasks in the list.");
+        showResponse(ResponseFormatter.formatTaskAdded(task, taskCount));
     }
 
     /**
@@ -147,8 +140,7 @@ public class Ui {
      * @param task task that was marked.
      */
     public void showTaskMarked(Task task) {
-        System.out.println("    Nice! I've marked this task as done:");
-        System.out.println("        " + task);
+        showResponse(ResponseFormatter.formatTaskMarked(task));
     }
 
     /**
@@ -157,8 +149,7 @@ public class Ui {
      * @param task task that was unmarked.
      */
     public void showTaskUnmarked(Task task) {
-        System.out.println("    OK, I've marked this task as not done yet:");
-        System.out.println("        " + task);
+        showResponse(ResponseFormatter.formatTaskUnmarked(task));
     }
 
     /**
@@ -168,9 +159,7 @@ public class Ui {
      * @param taskCount number of tasks after deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        System.out.println("    Noted. I've removed this task:");
-        System.out.println("        " + task);
-        System.out.println("    Now you have " + taskCount + " tasks in the list.");
+        showResponse(ResponseFormatter.formatTaskDeleted(task, taskCount));
     }
 
     /**
@@ -181,17 +170,6 @@ public class Ui {
      * @param date date to display tasks for.
      */
     public void showTasksOnDate(TaskList tasks, LocalDate date) {
-        System.out.println("    Here are the deadlines and events on "
-                + date.format(DATE_DISPLAY_FORMAT) + ":");
-        boolean hasMatch = false;
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.getTask(i).occursOn(date)) {
-                System.out.println(String.format("    %d.%s", i + 1, tasks.getTask(i)));
-                hasMatch = true;
-            }
-        }
-        if (!hasMatch) {
-            System.out.println("    No deadlines or events found.");
-        }
+        showResponse(ResponseFormatter.formatTasksOnDate(tasks, date));
     }
 }
