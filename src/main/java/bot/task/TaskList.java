@@ -19,12 +19,12 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
-     * Adds a task to the end of the list.
+     * Adds one or more tasks to the end of the list in the given order.
      *
-     * @param task task to add.
+     * @param tasksToAdd tasks to add.
      */
-    public void add(Task task) {
-        tasks.add(task);
+    public void add(Task... tasksToAdd) {
+        Collections.addAll(tasks, tasksToAdd);
     }
 
     /**

@@ -8,6 +8,21 @@ import org.junit.jupiter.api.Test;
 
 class TaskListTest {
     @Test
+    void add_multipleTasks_addsAllTasksInOrder() {
+        TaskList tasks = new TaskList();
+
+        tasks.add(
+                new Todo("read book"),
+                new Deadline("return book", LocalDate.of(2019, 6, 6)),
+                new Todo("buy milk"));
+
+        assertEquals(3, tasks.size());
+        assertEquals("[T][ ] read book", tasks.getTask(0).toString());
+        assertEquals("[D][ ] return book (by: Jun 06 2019)", tasks.getTask(1).toString());
+        assertEquals("[T][ ] buy milk", tasks.getTask(2).toString());
+    }
+
+    @Test
     void find_caseInsensitivePartialKeyword_returnsMatchesInOriginalOrder() {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("Read Book"));
