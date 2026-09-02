@@ -23,6 +23,16 @@ public class Bot {
     }
 
     /**
+     * Returns a response that echoes the user's message.
+     *
+     * @param input message entered by the user.
+     * @return response to display in the GUI
+     */
+    public String getResponse(String input) {
+        return "Bot heard: " + input;
+    }
+
+    /**
      * Starts the chatbot and handles commands entered by the user.
      *
      * @param args command-line arguments; not used by this application.

@@ -15,10 +15,11 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    In the same dialog, set the **Project language level** field to the `SDK default` option.
 1. After that, locate the `src/main/java/bot/Launcher.java` file, right-click it, and choose `Run Launcher.main()`
    (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, a window titled
-   `Bot` should appear and display `Hello World!`.
+   `Bot` should appear with a chat area, a command field, and a send button.
 
-The JavaFX window provides a scrollable chat area, a command field, and a send button. These controls are visual in
-this increment; a later increment can connect them to the existing chatbot logic.
+The JavaFX window provides a scrollable chat area, a command field, and a send button. Pressing Enter or clicking
+Send displays the user's message and Bot's response, then scrolls to the newest dialog automatically.
+The layout is defined in `src/main/resources/view` using FXML, while Java controller classes handle interaction.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
