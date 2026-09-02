@@ -8,11 +8,13 @@
          maxHeight="1.7976931348623157E308"
          maxWidth="1.7976931348623157E308"
          prefWidth="400.0"
+         stylesheets="@../css/dialog-box.css"
          type="javafx.scene.layout.HBox"
          xmlns="http://javafx.com/javafx/17"
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <Label fx:id="dialog"
+               maxWidth="280.0"
                minHeight="-Infinity"
                text="Label"
                wrapText="true" />

@@ -1,0 +1,22 @@
+.label {
+    -fx-background-color: linear-gradient(to bottom right, #fff5ad, #ffd75d);
+    -fx-background-insets: 0 7px 0 7px;
+    -fx-background-radius: 1em 1em 0 1em;
+    -fx-border-color: #e0ae24;
+    -fx-border-insets: 0 7px 0 7px;
+    -fx-border-radius: 1em 1em 0 1em;
+    -fx-border-width: 1px;
+    -fx-padding: 8px 10px;
+    -fx-text-fill: #263238;
+}
+
+.reply-label {
+    -fx-background-color: linear-gradient(to bottom right, #baf3eb, #69d8ca);
+    -fx-background-radius: 1em 1em 1em 0;
+    -fx-border-color: #1fa894;
+    -fx-border-radius: 1em 1em 1em 0;
+}
+
+#displayPicture {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);
+}

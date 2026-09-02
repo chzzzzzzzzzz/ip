@@ -19,7 +19,8 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 The JavaFX window provides a scrollable chat area, a command field, and a send button. Pressing Enter or clicking
 Send displays the user's message and Bot's response, then scrolls to the newest dialog automatically.
-The layout is defined in `src/main/resources/view` using FXML, while Java controller classes handle interaction.
+The responsive layout is defined in `src/main/resources/view` using FXML, while Java controller classes handle
+interaction. Styles in `src/main/resources/css` provide distinct message bubbles and interactive button feedback.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
