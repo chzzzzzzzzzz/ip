@@ -124,70 +124,152 @@ public class Bot {
         String arguments = command.getArguments();
 
         switch (command.getType()) {
-            case LIST: {
-                Parser.ensureNoArguments(arguments, "list");
-                return ResponseFormatter.formatTaskList(tasks);
-            }
-            case MARK: {
-                int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "mark");
-                Task task = tasks.mark(taskIndex);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskMarked(task);
-            }
-            case UNMARK: {
-                int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "unmark");
-                Task task = tasks.unmark(taskIndex);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskUnmarked(task);
-            }
-            case DELETE: {
-                int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "delete");
-                Task taskRemoved = tasks.delete(taskIndex);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskDeleted(taskRemoved, tasks.size());
-            }
-            case TODO: {
-                Task task = Parser.parseTodo(arguments);
-                tasks.add(task);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskAdded(task, tasks.size());
-            }
-            case DEADLINE: {
-                Task task = Parser.parseDeadline(arguments);
-                tasks.add(task);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskAdded(task, tasks.size());
-            }
-            case EVENT: {
-                Task task = Parser.parseEvent(arguments);
-                tasks.add(task);
-                storage.saveTasks(tasks);
-                return ResponseFormatter.formatTaskAdded(task, tasks.size());
-            }
-            case FIND: {
-                String keyword = Parser.parseFindKeyword(arguments);
-                return ResponseFormatter.formatMatchingTasks(tasks.find(keyword));
-            }
-            case ON: {
-                LocalDate date = Parser.parseDateQuery(arguments);
-                return ResponseFormatter.formatTasksOnDate(tasks, date);
-            }
-            case BYE: {
-                if (!arguments.isEmpty()) {
-                    throw new BotException("Use bye without any extra words.");
-                }
-                shouldExit = true;
-                return ResponseFormatter.formatGoodbye();
-            }
-            case UNKNOWN: {
-                if (command.getCommandWord().isEmpty()) {
-                    throw new BotException("Please enter a command.");
-                }
-                throw new BotException(
-                        "I don't know what \"" + command.getCommandWord() + "\" means.");
-            }
+            case LIST:
+                return listTasks(arguments);
+            case MARK:
+                return markTask(arguments);
+            case UNMARK:
+                return unmarkTask(arguments);
+            case DELETE:
+                return deleteTask(arguments);
+            case TODO:
+                return addTask(Parser.parseTodo(arguments));
+            case DEADLINE:
+                return addTask(Parser.parseDeadline(arguments));
+            case EVENT:
+                return addTask(Parser.parseEvent(arguments));
+            case FIND:
+                return findTasks(arguments);
+            case ON:
+                return findTasksOnDate(arguments);
+            case BYE:
+                return exit(arguments);
+            case UNKNOWN:
+                throw createUnknownCommandException(command.getCommandWord());
             default:
                 throw new BotException("I don't know what that command means.");
         }
+    }
+
+    /**
+     * Validates the list command and formats all stored tasks.
+     *
+     * @param arguments text following the command word.
+     * @return formatted task list
+     * @throws BotException if unexpected arguments were supplied
+     */
+    private String listTasks(String arguments) throws BotException {
+        Parser.ensureNoArguments(arguments, "list");
+        return ResponseFormatter.formatTaskList(tasks);
+    }
+
+    /**
+     * Marks a task as done and saves the updated task list.
+     *
+     * @param arguments text containing the task number.
+     * @return confirmation that the task was marked
+     * @throws BotException if the task number is invalid
+     * @throws IOException if the updated task list cannot be saved
+     */
+    private String markTask(String arguments) throws BotException, IOException {
+        int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "mark");
+        Task task = tasks.mark(taskIndex);
+        storage.saveTasks(tasks);
+        return ResponseFormatter.formatTaskMarked(task);
+    }
+
+    /**
+     * Marks a task as not done and saves the updated task list.
+     *
+     * @param arguments text containing the task number.
+     * @return confirmation that the task was unmarked
+     * @throws BotException if the task number is invalid
+     * @throws IOException if the updated task list cannot be saved
+     */
+    private String unmarkTask(String arguments) throws BotException, IOException {
+        int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "unmark");
+        Task task = tasks.unmark(taskIndex);
+        storage.saveTasks(tasks);
+        return ResponseFormatter.formatTaskUnmarked(task);
+    }
+
+    /**
+     * Deletes a task and saves the updated task list.
+     *
+     * @param arguments text containing the task number.
+     * @return confirmation that the task was deleted
+     * @throws BotException if the task number is invalid
+     * @throws IOException if the updated task list cannot be saved
+     */
+    private String deleteTask(String arguments) throws BotException, IOException {
+        int taskIndex = Parser.parseTaskIndex(arguments, tasks.size(), "delete");
+        Task removedTask = tasks.delete(taskIndex);
+        storage.saveTasks(tasks);
+        return ResponseFormatter.formatTaskDeleted(removedTask, tasks.size());
+    }
+
+    /**
+     * Adds a task and saves the updated task list.
+     *
+     * @param task task to add.
+     * @return confirmation that the task was added
+     * @throws IOException if the updated task list cannot be saved
+     */
+    private String addTask(Task task) throws IOException {
+        tasks.add(task);
+        storage.saveTasks(tasks);
+        return ResponseFormatter.formatTaskAdded(task, tasks.size());
+    }
+
+    /**
+     * Finds tasks containing the requested description keyword.
+     *
+     * @param arguments text containing the search keyword.
+     * @return formatted matching tasks
+     * @throws BotException if the keyword is empty
+     */
+    private String findTasks(String arguments) throws BotException {
+        String keyword = Parser.parseFindKeyword(arguments);
+        return ResponseFormatter.formatMatchingTasks(tasks.find(keyword));
+    }
+
+    /**
+     * Finds deadlines and events occurring on the requested date.
+     *
+     * @param arguments text containing the requested date.
+     * @return formatted tasks occurring on the date
+     * @throws BotException if the date is missing or invalid
+     */
+    private String findTasksOnDate(String arguments) throws BotException {
+        LocalDate date = Parser.parseDateQuery(arguments);
+        return ResponseFormatter.formatTasksOnDate(tasks, date);
+    }
+
+    /**
+     * Validates the bye command and records that the application should exit.
+     *
+     * @param arguments text following the command word.
+     * @return farewell response
+     * @throws BotException if unexpected arguments were supplied
+     */
+    private String exit(String arguments) throws BotException {
+        if (!arguments.isEmpty()) {
+            throw new BotException("Use bye without any extra words.");
+        }
+        shouldExit = true;
+        return ResponseFormatter.formatGoodbye();
+    }
+
+    /**
+     * Creates the error reported for an empty or unrecognized command word.
+     *
+     * @param commandWord command word entered by the user.
+     * @return exception describing why the command is unknown
+     */
+    private BotException createUnknownCommandException(String commandWord) {
+        if (commandWord.isEmpty()) {
+            return new BotException("Please enter a command.");
+        }
+        return new BotException("I don't know what \"" + commandWord + "\" means.");
     }
 }
