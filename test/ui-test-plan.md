@@ -191,7 +191,7 @@ Here are the tasks in your list:
 Bye. Hope to see you again soon!
 ```
 
-## TC7 — Reject invalid command structure
+## TC7 — Reject iclang -o lab2c -DTEST0 lab2c.cnvalid command structure
 
 **Aim:** Verify that blank commands and extra information supplied to argument-free commands are explained without terminating the chatbot.
 

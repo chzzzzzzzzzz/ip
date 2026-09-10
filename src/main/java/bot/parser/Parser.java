@@ -176,6 +176,9 @@ public final class Parser {
      * @throws BotException if the task number is missing or invalid
      */
     public static int parseTaskIndex(String arguments, int taskCount, String command) throws BotException {
+        assert taskCount >= 0 : "Task count must not be negative";
+        assert command != null && !command.isBlank() : "Command name must not be blank";
+
         if (arguments.isEmpty()) {
             throw new BotException("Tell me which task number to " + command + ".");
         }

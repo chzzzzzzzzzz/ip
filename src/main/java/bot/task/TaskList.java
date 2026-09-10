@@ -24,6 +24,11 @@ public class TaskList implements Iterable<Task> {
      * @param tasksToAdd tasks to add.
      */
     public void add(Task... tasksToAdd) {
+        assert tasksToAdd != null : "Tasks to add must not be null";
+        for (Task task : tasksToAdd) {
+            assert task != null : "Task list must not contain null tasks";
+        }
+
         Collections.addAll(tasks, tasksToAdd);
     }
 
@@ -34,6 +39,8 @@ public class TaskList implements Iterable<Task> {
      * @return task at the index
      */
     public Task getTask(int index) {
+        assert index >= 0 && index < tasks.size() : "Task index must be within the list bounds";
+
         return tasks.get(index);
     }
 
