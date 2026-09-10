@@ -18,6 +18,25 @@ import bot.task.Todo;
  * Loads and saves the chatbot's tasks using a file on disk.
  */
 public class Storage {
+    private static final String FIELD_SEPARATOR_REGEX = "\\s*\\|\\s*";
+    private static final String NOT_DONE_STATUS = "0";
+    private static final String DONE_STATUS = "1";
+    private static final String TODO_TYPE = "T";
+    private static final String DEADLINE_TYPE = "D";
+    private static final String EVENT_TYPE = "E";
+
+    private static final int TYPE_FIELD_INDEX = 0;
+    private static final int STATUS_FIELD_INDEX = 1;
+    private static final int DESCRIPTION_FIELD_INDEX = 2;
+    private static final int DEADLINE_DATE_FIELD_INDEX = 3;
+    private static final int EVENT_START_FIELD_INDEX = 3;
+    private static final int EVENT_END_FIELD_INDEX = 4;
+
+    private static final int COMMON_FIELD_COUNT = 3;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DEADLINE_FIELD_COUNT = 4;
+    private static final int EVENT_FIELD_COUNT = 5;
+
     private final File dataFile;
 
     /**
@@ -64,55 +83,120 @@ public class Storage {
      * @throws IOException if the line does not follow the storage format
      */
     private Task parseTask(String line, int lineNumber) throws IOException {
-        String[] parts = line.split("\\s*\\|\\s*", -1);
-        if (parts.length < 3) {
+        String[] fields = line.split(FIELD_SEPARATOR_REGEX, -1);
+        if (fields.length < COMMON_FIELD_COUNT) {
             throw invalidData(lineNumber, "every task must contain a type, status, and description");
         }
 
-        String type = parts[0];
-        String status = parts[1];
-        String description = parts[2];
-        if (!status.equals("0") && !status.equals("1")) {
-            throw invalidData(lineNumber, "status must be 0 or 1");
-        }
+        boolean isDone = parseDoneStatus(fields[STATUS_FIELD_INDEX], lineNumber);
+        String description = fields[DESCRIPTION_FIELD_INDEX];
         if (description.isEmpty()) {
             throw invalidData(lineNumber, "description cannot be empty");
         }
 
-        Task task;
-        switch (type) {
-            case "T":
-                ensureFieldCount(parts, 3, lineNumber, "todo");
-                task = new Todo(description);
-                break;
-            case "D":
-                ensureFieldCount(parts, 4, lineNumber, "deadline");
-                if (parts[3].isEmpty()) {
-                    throw invalidData(lineNumber, "deadline date cannot be empty");
-                }
-
-                task = new Deadline(description, parseDeadlineDate(parts[3], lineNumber));
-                break;
-            case "E":
-                ensureFieldCount(parts, 5, lineNumber, "event");
-                if (parts[3].isEmpty() || parts[4].isEmpty()) {
-                    throw invalidData(lineNumber, "event start and end times cannot be empty");
-                }
-                LocalDateTime from = parseEventDateTime(parts[3], lineNumber);
-                LocalDateTime to = parseEventDateTime(parts[4], lineNumber);
-                if (!to.isAfter(from)) {
-                    throw invalidData(lineNumber, "event end must be after its start");
-                }
-                task = new Event(description, from, to);
-                break;
-            default:
-                throw invalidData(lineNumber, "unknown task type '" + type + "'");
-        }
-
-        if (status.equals("1")) {
+        Task task = createTask(fields, description, lineNumber);
+        if (isDone) {
             task.mark();
         }
         return task;
+    }
+
+    /**
+     * Converts a saved status field into its boolean form.
+     *
+     * @param status saved status field.
+     * @param lineNumber one-based data-file line number.
+     * @return {@code true} if the saved task is done
+     * @throws IOException if the status is neither 0 nor 1
+     */
+    private boolean parseDoneStatus(String status, int lineNumber) throws IOException {
+        if (DONE_STATUS.equals(status)) {
+            return true;
+        }
+        if (NOT_DONE_STATUS.equals(status)) {
+            return false;
+        }
+        throw invalidData(lineNumber, "status must be 0 or 1");
+    }
+
+    /**
+     * Creates the task subtype identified by the saved type field.
+     *
+     * @param fields fields parsed from the saved task.
+     * @param description validated task description.
+     * @param lineNumber one-based data-file line number.
+     * @return task represented by the fields
+     * @throws IOException if the type or its fields are invalid
+     */
+    private Task createTask(String[] fields, String description, int lineNumber) throws IOException {
+        String type = fields[TYPE_FIELD_INDEX];
+        switch (type) {
+            case TODO_TYPE:
+                return createTodo(fields, description, lineNumber);
+            case DEADLINE_TYPE:
+                return createDeadline(fields, description, lineNumber);
+            case EVENT_TYPE:
+                return createEvent(fields, description, lineNumber);
+            default:
+                throw invalidData(lineNumber, "unknown task type '" + type + "'");
+        }
+    }
+
+    /**
+     * Creates a todo from its saved fields.
+     *
+     * @param fields fields parsed from the saved todo.
+     * @param description validated task description.
+     * @param lineNumber one-based data-file line number.
+     * @return saved todo
+     * @throws IOException if the field count is invalid
+     */
+    private Todo createTodo(String[] fields, String description, int lineNumber) throws IOException {
+        ensureFieldCount(fields, TODO_FIELD_COUNT, lineNumber, "todo");
+        return new Todo(description);
+    }
+
+    /**
+     * Creates a deadline from its saved fields.
+     *
+     * @param fields fields parsed from the saved deadline.
+     * @param description validated task description.
+     * @param lineNumber one-based data-file line number.
+     * @return saved deadline
+     * @throws IOException if the deadline fields are invalid
+     */
+    private Deadline createDeadline(String[] fields, String description, int lineNumber) throws IOException {
+        ensureFieldCount(fields, DEADLINE_FIELD_COUNT, lineNumber, "deadline");
+        String deadlineDate = fields[DEADLINE_DATE_FIELD_INDEX];
+        if (deadlineDate.isEmpty()) {
+            throw invalidData(lineNumber, "deadline date cannot be empty");
+        }
+        return new Deadline(description, parseDeadlineDate(deadlineDate, lineNumber));
+    }
+
+    /**
+     * Creates an event from its saved fields.
+     *
+     * @param fields fields parsed from the saved event.
+     * @param description validated task description.
+     * @param lineNumber one-based data-file line number.
+     * @return saved event
+     * @throws IOException if the event fields are invalid
+     */
+    private Event createEvent(String[] fields, String description, int lineNumber) throws IOException {
+        ensureFieldCount(fields, EVENT_FIELD_COUNT, lineNumber, "event");
+        String savedStart = fields[EVENT_START_FIELD_INDEX];
+        String savedEnd = fields[EVENT_END_FIELD_INDEX];
+        if (savedStart.isEmpty() || savedEnd.isEmpty()) {
+            throw invalidData(lineNumber, "event start and end times cannot be empty");
+        }
+
+        LocalDateTime start = parseEventDateTime(savedStart, lineNumber);
+        LocalDateTime end = parseEventDateTime(savedEnd, lineNumber);
+        if (!end.isAfter(start)) {
+            throw invalidData(lineNumber, "event end must be after its start");
+        }
+        return new Event(description, start, end);
     }
 
     /**
@@ -150,15 +234,15 @@ public class Storage {
     /**
      * Checks that a saved task contains exactly the fields required by its type.
      *
-     * @param parts fields parsed from the saved task.
+     * @param fields fields parsed from the saved task.
      * @param expectedCount required number of fields.
      * @param lineNumber one-based data-file line number.
      * @param taskType name of the task type for the error message.
      * @throws IOException if the field count is incorrect
      */
-    private void ensureFieldCount(String[] parts, int expectedCount, int lineNumber, String taskType)
+    private void ensureFieldCount(String[] fields, int expectedCount, int lineNumber, String taskType)
             throws IOException {
-        if (parts.length != expectedCount) {
+        if (fields.length != expectedCount) {
             throw invalidData(lineNumber, taskType + " must contain " + expectedCount + " fields");
         }
     }
