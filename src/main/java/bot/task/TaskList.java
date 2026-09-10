@@ -18,6 +18,10 @@ public class TaskList implements Iterable<Task> {
         this.tasks = new ArrayList<>();
     }
 
+    private TaskList(List<Task> tasks) {
+        this.tasks = new ArrayList<>(tasks);
+    }
+
     /**
      * Adds one or more tasks to the end of the list in the given order.
      *
@@ -88,13 +92,10 @@ public class TaskList implements Iterable<Task> {
      * @return new task list containing matching tasks
      */
     public TaskList find(String keyword) {
-        TaskList matchingTasks = new TaskList();
-        for (Task task : tasks) {
-            if (task.hasKeyword(keyword)) {
-                matchingTasks.add(task);
-            }
-        }
-        return matchingTasks;
+        List<Task> matchingTasks = tasks.stream()
+                .filter(task -> task.hasKeyword(keyword))
+                .toList();
+        return new TaskList(matchingTasks);
     }
 
     /**
