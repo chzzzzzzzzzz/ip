@@ -186,6 +186,16 @@ class ParserTest {
     }
 
     @Test
+    void parseTaskIndex_negativeTaskCount_throwsAssertionError() {
+        assertThrows(AssertionError.class, () -> Parser.parseTaskIndex("1", -1, "mark"));
+    }
+
+    @Test
+    void parseTaskIndex_blankCommandName_throwsAssertionError() {
+        assertThrows(AssertionError.class, () -> Parser.parseTaskIndex("1", 3, ""));
+    }
+
+    @Test
     void parseTaskIndex_emptyArgument_throwsException() {
         BotException exception = assertThrows(BotException.class, () ->
                 Parser.parseTaskIndex("", 3, "mark"));

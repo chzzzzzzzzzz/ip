@@ -1,12 +1,28 @@
 package bot.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
 class TaskListTest {
+    @Test
+    void add_nullTask_throwsAssertionError() {
+        TaskList tasks = new TaskList();
+
+        assertThrows(AssertionError.class, () -> tasks.add((Task) null));
+    }
+
+    @Test
+    void getTask_indexOutsideList_throwsAssertionError() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        assertThrows(AssertionError.class, () -> tasks.getTask(1));
+    }
+
     @Test
     void add_multipleTasks_addsAllTasksInOrder() {
         TaskList tasks = new TaskList();
