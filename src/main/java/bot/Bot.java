@@ -142,6 +142,8 @@ public class Bot {
                 return findTasks(arguments);
             case ON:
                 return findTasksOnDate(arguments);
+            case SORT:
+                return sortTasks(arguments);
             case BYE:
                 return exit(arguments);
             case UNKNOWN:
@@ -161,6 +163,21 @@ public class Bot {
     private String listTasks(String arguments) throws BotException {
         Parser.ensureNoArguments(arguments, "list");
         return ResponseFormatter.formatTaskList(tasks);
+    }
+
+    /**
+     * Sorts dated tasks chronologically, places todos afterward, and saves the new order.
+     *
+     * @param arguments unexpected text after the sort command.
+     * @return message containing the sorted task list
+     * @throws BotException if extra arguments are supplied
+     * @throws IOException if the updated task order cannot be saved
+     */
+    private String sortTasks(String arguments) throws BotException, IOException {
+        Parser.ensureNoArguments(arguments, "sort");
+        tasks.sortChronologically();
+        storage.saveTasks(tasks);
+        return ResponseFormatter.formatSortedTaskList(tasks);
     }
 
     /**

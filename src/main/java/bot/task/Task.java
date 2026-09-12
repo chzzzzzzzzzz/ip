@@ -1,7 +1,9 @@
 package bot.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents a task that can be marked as done or not done.
@@ -60,6 +62,15 @@ public class Task {
      */
     public boolean occursOn(LocalDate date) {
         return false;
+    }
+
+    /**
+     * Returns the date and time used to sort this task chronologically.
+     *
+     * @return the chronological sort key, or an empty value for an undated task
+     */
+    public Optional<LocalDateTime> getChronologicalSortKey() {
+        return Optional.empty();
     }
 
     /**

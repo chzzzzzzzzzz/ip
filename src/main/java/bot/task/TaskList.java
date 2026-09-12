@@ -1,7 +1,9 @@
 package bot.task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,6 +82,16 @@ public class TaskList implements Iterable<Task> {
         Task task = getTask(index);
         task.unmark();
         return task;
+    }
+
+    /**
+     * Sorts dated tasks chronologically and places undated tasks afterward.
+     * Tasks with the same sort key keep their original relative order.
+     */
+    public void sortChronologically() {
+        Comparator<Task> byDateTime = Comparator.comparing(
+                task -> task.getChronologicalSortKey().orElse(LocalDateTime.MAX));
+        tasks.sort(byDateTime);
     }
 
     /**

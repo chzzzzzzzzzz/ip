@@ -22,6 +22,8 @@ public enum CommandType {
     FIND,
     /** Displays dated tasks occurring on a specified date. */
     ON,
+    /** Sorts dated tasks chronologically and places todos afterward. */
+    SORT,
     /** Ends the chatbot session. */
     BYE,
     /** Represents an unrecognized command word. */

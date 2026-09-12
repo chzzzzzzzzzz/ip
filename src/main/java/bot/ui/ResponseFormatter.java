@@ -70,6 +70,18 @@ public final class ResponseFormatter {
     }
 
     /**
+     * Formats the full task list after it has been sorted chronologically.
+     *
+     * @param tasks sorted task list to display.
+     * @return formatted sorted task list
+     */
+    public static String formatSortedTaskList(TaskList tasks) {
+        StringBuilder response = new StringBuilder("Here are your tasks sorted chronologically:");
+        appendTasks(response, tasks);
+        return response.toString();
+    }
+
+    /**
      * Formats tasks that match a find command in their original order.
      *
      * @param matchingTasks matching tasks to display.

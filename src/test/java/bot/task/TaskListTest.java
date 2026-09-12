@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
@@ -71,5 +72,45 @@ class TaskListTest {
         TaskList matchingTasks = tasks.find("book");
 
         assertEquals(0, matchingTasks.size());
+    }
+
+    @Test
+    void sortChronologically_mixedTasks_ordersDatedTasksBeforeTodos() {
+        TaskList tasks = new TaskList();
+        tasks.add(
+                new Todo("first todo"),
+                new Event("later event", LocalDateTime.of(2019, 12, 3, 14, 0),
+                        LocalDateTime.of(2019, 12, 3, 16, 0)),
+                new Deadline("middle deadline", LocalDate.of(2019, 12, 2)),
+                new Event("earliest event", LocalDateTime.of(2019, 12, 1, 9, 0),
+                        LocalDateTime.of(2019, 12, 1, 10, 0)),
+                new Todo("second todo"));
+
+        tasks.sortChronologically();
+
+        assertEquals("[E][ ] earliest event (from: Dec 01 2019, 9:00AM to: Dec 01 2019, 10:00AM)",
+                tasks.getTask(0).toString());
+        assertEquals("[D][ ] middle deadline (by: Dec 02 2019)", tasks.getTask(1).toString());
+        assertEquals("[E][ ] later event (from: Dec 03 2019, 2:00PM to: Dec 03 2019, 4:00PM)",
+                tasks.getTask(2).toString());
+        assertEquals("[T][ ] first todo", tasks.getTask(3).toString());
+        assertEquals("[T][ ] second todo", tasks.getTask(4).toString());
+    }
+
+    @Test
+    void sortChronologically_equalKeys_preservesOriginalOrder() {
+        TaskList tasks = new TaskList();
+        tasks.add(
+                new Todo("first todo"),
+                new Deadline("first deadline", LocalDate.of(2019, 12, 2)),
+                new Todo("second todo"),
+                new Deadline("second deadline", LocalDate.of(2019, 12, 2)));
+
+        tasks.sortChronologically();
+
+        assertEquals("[D][ ] first deadline (by: Dec 02 2019)", tasks.getTask(0).toString());
+        assertEquals("[D][ ] second deadline (by: Dec 02 2019)", tasks.getTask(1).toString());
+        assertEquals("[T][ ] first todo", tasks.getTask(2).toString());
+        assertEquals("[T][ ] second todo", tasks.getTask(3).toString());
     }
 }

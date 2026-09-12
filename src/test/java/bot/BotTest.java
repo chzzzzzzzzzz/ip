@@ -86,6 +86,32 @@ class BotTest {
     }
 
     @Test
+    void getResponse_sortTasks_ordersTasksAndSavesNewOrder() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("data").resolve("duke.txt");
+        Bot bot = new Bot(new Storage(dataFile.toFile()));
+        bot.getResponse("todo buy milk");
+        bot.getResponse("event later /from 2019-12-10 1400 /to 2019-12-10 1600");
+        bot.getResponse("deadline submit report /by 2019-12-05");
+        bot.getResponse("event earlier /from 2019-12-01 0900 /to 2019-12-01 1000");
+        bot.getResponse("todo read book");
+
+        assertEquals("""
+                Here are your tasks sorted chronologically:
+                1.[E][ ] earlier (from: Dec 01 2019, 9:00AM to: Dec 01 2019, 10:00AM)
+                2.[D][ ] submit report (by: Dec 05 2019)
+                3.[E][ ] later (from: Dec 10 2019, 2:00PM to: Dec 10 2019, 4:00PM)
+                4.[T][ ] buy milk
+                5.[T][ ] read book""", bot.getResponse("sort"));
+        assertEquals("""
+                E | 0 | earlier | 2019-12-01T09:00 | 2019-12-01T10:00
+                D | 0 | submit report | 2019-12-05
+                E | 0 | later | 2019-12-10T14:00 | 2019-12-10T16:00
+                T | 0 | buy milk
+                T | 0 | read book
+                """, Files.readString(dataFile));
+    }
+
+    @Test
     void getResponse_invalidCommands_returnsErrorsAndContinues() {
         Bot bot = createBot();
 
@@ -93,6 +119,8 @@ class BotTest {
         assertEquals("OOPS!!! I don't know what \"blah\" means.", bot.getResponse("blah"));
         assertEquals("OOPS!!! The description of a todo cannot be empty.", bot.getResponse("todo"));
         assertEquals("OOPS!!! The task list is empty.", bot.getResponse("mark 1"));
+        assertEquals("OOPS!!! The sort command does not take extra information.",
+                bot.getResponse("sort later"));
         assertEquals("Here are the tasks in your list:", bot.getResponse("list"));
     }
 

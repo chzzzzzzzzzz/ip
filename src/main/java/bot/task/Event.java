@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents a task that occurs between a start and end date or time.
@@ -54,6 +55,16 @@ public class Event extends Task {
         LocalDate startDate = startDateTime.toLocalDate();
         LocalDate endDate = endDateTime.toLocalDate();
         return !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
+
+    /**
+     * Returns the event start date and time as its chronological sort key.
+     *
+     * @return the event start date and time
+     */
+    @Override
+    public Optional<LocalDateTime> getChronologicalSortKey() {
+        return Optional.of(startDateTime);
     }
 
     /**
