@@ -1,8 +1,10 @@
 package bot.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents a task that must be completed by a specified date.
@@ -45,6 +47,16 @@ public class Deadline extends Task {
     @Override
     public boolean occursOn(LocalDate date) {
         return dueDate.equals(date);
+    }
+
+    /**
+     * Returns midnight on the deadline date as its chronological sort key.
+     *
+     * @return the deadline date at the start of the day
+     */
+    @Override
+    public Optional<LocalDateTime> getChronologicalSortKey() {
+        return Optional.of(dueDate.atStartOfDay());
     }
 
     /**

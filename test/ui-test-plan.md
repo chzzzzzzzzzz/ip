@@ -712,3 +712,83 @@ Here are the matching tasks in your list:
 1.[T][ ] read book today
 Bye. Hope to see you again soon!
 ```
+
+## TC24 — Sort dated tasks chronologically
+
+**Aim:** Verify that sort orders events by start time and deadlines by due date, places todos afterward, and saves the new order.
+
+### Inputs
+
+```text
+todo buy milk
+event later /from 2019-12-10 1400 /to 2019-12-10 1600
+deadline submit report /by 2019-12-05
+event earlier /from 2019-12-01 0900 /to 2019-12-01 1000
+todo read book
+sort
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] buy milk
+Now you have 1 tasks in the list.
+Got it. I've added this task:
+[E][ ] later (from: Dec 10 2019, 2:00PM to: Dec 10 2019, 4:00PM)
+Now you have 2 tasks in the list.
+Got it. I've added this task:
+[D][ ] submit report (by: Dec 05 2019)
+Now you have 3 tasks in the list.
+Got it. I've added this task:
+[E][ ] earlier (from: Dec 01 2019, 9:00AM to: Dec 01 2019, 10:00AM)
+Now you have 4 tasks in the list.
+Got it. I've added this task:
+[T][ ] read book
+Now you have 5 tasks in the list.
+Here are your tasks sorted chronologically:
+1.[E][ ] earlier (from: Dec 01 2019, 9:00AM to: Dec 01 2019, 10:00AM)
+2.[D][ ] submit report (by: Dec 05 2019)
+3.[E][ ] later (from: Dec 10 2019, 2:00PM to: Dec 10 2019, 4:00PM)
+4.[T][ ] buy milk
+5.[T][ ] read book
+Here are the tasks in your list:
+1.[E][ ] earlier (from: Dec 01 2019, 9:00AM to: Dec 01 2019, 10:00AM)
+2.[D][ ] submit report (by: Dec 05 2019)
+3.[E][ ] later (from: Dec 10 2019, 2:00PM to: Dec 10 2019, 4:00PM)
+4.[T][ ] buy milk
+5.[T][ ] read book
+Bye. Hope to see you again soon!
+```
+
+### Expected data file
+
+```text
+E | 0 | earlier | 2019-12-01T09:00 | 2019-12-01T10:00
+D | 0 | submit report | 2019-12-05
+E | 0 | later | 2019-12-10T14:00 | 2019-12-10T16:00
+T | 0 | buy milk
+T | 0 | read book
+```
+
+## TC25 — Reject extra sort information
+
+**Aim:** Verify that sort rejects unexpected arguments without terminating the chatbot.
+
+### Inputs
+
+```text
+sort later
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! The sort command does not take extra information.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
