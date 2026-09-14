@@ -792,3 +792,111 @@ OOPS!!! The sort command does not take extra information.
 Here are the tasks in your list:
 Bye. Hope to see you again soon!
 ```
+
+## TC26 — Handle malformed command structure
+
+**Aim:** Verify that extra whitespace is normalized while reserved separators, repeated markers, reversed markers, and multiple task numbers produce specific errors.
+
+### Inputs
+
+```text
+todo     read    book
+todo plan | review
+deadline submit report /by 2019-12-02 /by 2019-12-03
+event meeting /from 2019-12-02 1400 /from 2019-12-02 1500 /to 2019-12-02 1600
+event meeting /from 2019-12-02 1400 /to 2019-12-02 1500 /to 2019-12-02 1600
+event meeting /to 2019-12-02 1600 /from 2019-12-02 1400
+mark 1 2
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] read book
+Now you have 1 tasks in the list.
+OOPS!!! Task descriptions cannot contain the | character.
+OOPS!!! A deadline can contain only one /by marker.
+OOPS!!! An event can contain only one /from marker.
+OOPS!!! An event can contain only one /to marker.
+OOPS!!! The /from marker must appear before the /to marker.
+OOPS!!! Enter only one task number for the mark command.
+Here are the tasks in your list:
+1.[T][ ] read book
+Bye. Hope to see you again soon!
+```
+
+## TC27 — Reject duplicate tasks
+
+**Aim:** Verify that equivalent tasks are rejected regardless of letter case or completion status while tasks with different dates remain valid.
+
+### Inputs
+
+```text
+todo Read Book
+mark 1
+todo read book
+deadline submit report /by 2019-12-02
+deadline SUBMIT REPORT /by 2019-12-02
+deadline submit report /by 2019-12-03
+event meeting /from 2019-12-04 1400 /to 2019-12-04 1600
+event MEETING /from 2019-12-04 1400 /to 2019-12-04 1600
+list
+bye
+```
+
+### Expected output
+
+```text
+Got it. I've added this task:
+[T][ ] Read Book
+Now you have 1 tasks in the list.
+Nice! I've marked this task as done:
+[T][X] Read Book
+OOPS!!! That task is already in your list.
+Got it. I've added this task:
+[D][ ] submit report (by: Dec 02 2019)
+Now you have 2 tasks in the list.
+OOPS!!! That task is already in your list.
+Got it. I've added this task:
+[D][ ] submit report (by: Dec 03 2019)
+Now you have 3 tasks in the list.
+Got it. I've added this task:
+[E][ ] meeting (from: Dec 04 2019, 2:00PM to: Dec 04 2019, 4:00PM)
+Now you have 4 tasks in the list.
+OOPS!!! That task is already in your list.
+Here are the tasks in your list:
+1.[T][X] Read Book
+2.[D][ ] submit report (by: Dec 02 2019)
+3.[D][ ] submit report (by: Dec 03 2019)
+4.[E][ ] meeting (from: Dec 04 2019, 2:00PM to: Dec 04 2019, 4:00PM)
+Bye. Hope to see you again soon!
+```
+
+## TC28 — Reject duplicate tasks in saved data
+
+**Aim:** Verify that equivalent saved tasks report the duplicate line and cause a safe fallback to an empty list.
+
+### Initial data file
+
+```text
+T | 1 | Read Book
+T | 0 | read book
+```
+
+### Inputs
+
+```text
+list
+bye
+```
+
+### Expected output
+
+```text
+OOPS!!! I couldn't load your data file: invalid data on line 2 (duplicates an earlier task). I started with an empty list.
+Here are the tasks in your list:
+Bye. Hope to see you again soon!
+```
