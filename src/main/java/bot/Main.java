@@ -12,8 +12,8 @@ import javafx.stage.Stage;
  * Displays the FXML-based JavaFX interface for the chatbot.
  */
 public class Main extends Application {
-    private static final double MINIMUM_WINDOW_HEIGHT = 220.0;
-    private static final double MINIMUM_WINDOW_WIDTH = 417.0;
+    private static final double MINIMUM_WINDOW_HEIGHT = 320.0;
+    private static final double MINIMUM_WINDOW_WIDTH = 360.0;
 
     private final Bot bot = new Bot();
 
@@ -34,6 +34,7 @@ public class Main extends Application {
         stage.setTitle("Bot");
         stage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
         stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
+        stage.setResizable(true);
         stage.setScene(scene);
         stage.show();
     }
