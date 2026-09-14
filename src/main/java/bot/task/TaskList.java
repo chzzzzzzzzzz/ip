@@ -104,6 +104,18 @@ public class TaskList implements Iterable<Task> {
     }
 
     /**
+     * Checks whether the list already contains a task with the same identifying details.
+     * Completion status is ignored when comparing tasks.
+     *
+     * @param task task to compare against the stored tasks.
+     * @return {@code true} if a matching task already exists
+     */
+    public boolean containsSameTask(Task task) {
+        assert task != null : "Task being compared must not be null";
+        return tasks.stream().anyMatch(existingTask -> existingTask.hasSameDetails(task));
+    }
+
+    /**
      * Returns tasks whose descriptions contain the given keyword.
      * Matching is case-insensitive and preserves the original task order.
      *

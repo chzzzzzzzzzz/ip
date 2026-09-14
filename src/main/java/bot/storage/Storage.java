@@ -59,6 +59,9 @@ public class Storage {
         if (!dataFile.exists()) {
             return tasks;
         }
+        if (!dataFile.isFile()) {
+            throw new IOException("data path is not a file: " + dataFile);
+        }
 
         try (Scanner scanner = new Scanner(dataFile)) {
             int lineNumber = 0;
@@ -68,7 +71,15 @@ public class Storage {
                 if (line.isBlank()) {
                     continue;
                 }
-                tasks.add(parseTask(line, lineNumber));
+                Task task = parseTask(line, lineNumber);
+                if (tasks.containsSameTask(task)) {
+                    throw invalidData(lineNumber, "duplicates an earlier task");
+                }
+                tasks.add(task);
+            }
+            if (scanner.ioException() != null) {
+                throw new IOException("could not finish reading data file: " + dataFile,
+                        scanner.ioException());
             }
         }
         return tasks;
@@ -273,6 +284,9 @@ public class Storage {
             if (!parentDirectory.isDirectory()) {
                 throw new IOException("Data directory path is not a directory: " + parentDirectory);
             }
+        }
+        if (dataFile.exists() && !dataFile.isFile()) {
+            throw new IOException("Data file path is not a file: " + dataFile);
         }
 
         try (FileWriter writer = new FileWriter(dataFile)) {

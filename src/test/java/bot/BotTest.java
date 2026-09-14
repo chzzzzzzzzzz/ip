@@ -125,6 +125,43 @@ class BotTest {
     }
 
     @Test
+    void getResponse_duplicateTasks_rejectsDuplicatesAndContinues() {
+        Bot bot = createBot();
+
+        bot.getResponse("todo Read Book");
+        bot.getResponse("mark 1");
+        assertEquals("OOPS!!! That task is already in your list.",
+                bot.getResponse("todo read book"));
+
+        bot.getResponse("deadline submit report /by 2019-12-02");
+        assertEquals("OOPS!!! That task is already in your list.",
+                bot.getResponse("deadline SUBMIT REPORT /by 2019-12-02"));
+        assertEquals("""
+                Got it. I've added this task:
+                    [D][ ] submit report (by: Dec 03 2019)
+                Now you have 3 tasks in the list.""",
+                bot.getResponse("deadline submit report /by 2019-12-03"));
+    }
+
+    @Test
+    void getResponse_nullInput_returnsEmptyCommandError() {
+        Bot bot = createBot();
+
+        assertEquals("OOPS!!! Please enter a command.", bot.getResponse(null));
+    }
+
+    @Test
+    void getResponse_storagePathIsDirectory_returnsDetailedSavingError() throws IOException {
+        Path dataPath = temporaryDirectory.resolve("duke.txt");
+        Files.createDirectory(dataPath);
+        Bot bot = new Bot(new Storage(dataPath.toFile()));
+
+        assertEquals("OOPS!!! I couldn't save your tasks: Data file path is not a file: "
+                        + dataPath + ". Your latest changes may not be available next time.",
+                bot.getResponse("todo read book"));
+    }
+
+    @Test
     void getResponse_taskChange_savesAndReloadsTask() throws IOException {
         Path dataFile = temporaryDirectory.resolve("data").resolve("duke.txt");
         Storage storage = new Storage(dataFile.toFile());

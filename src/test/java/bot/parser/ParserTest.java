@@ -17,6 +17,29 @@ import bot.task.Event;
  */
 class ParserTest {
     @Test
+    void parse_irregularWhitespace_normalizesCommandAndArguments() {
+        ParsedCommand command = Parser.parse("  DEADLINE   submit   report   /by   2019-12-02  ");
+
+        assertEquals(CommandType.DEADLINE, command.getType());
+        assertEquals("submit report /by 2019-12-02", command.getArguments());
+    }
+
+    @Test
+    void parse_nullInput_returnsEmptyUnknownCommand() {
+        ParsedCommand command = Parser.parse(null);
+
+        assertEquals(CommandType.UNKNOWN, command.getType());
+        assertEquals("", command.getCommandWord());
+        assertEquals("", command.getArguments());
+    }
+
+    @Test
+    void parseTodo_storageSeparatorInDescription_throwsException() {
+        assertBotException("Task descriptions cannot contain the | character.", () ->
+                Parser.parseTodo("plan | review"));
+    }
+
+    @Test
     void parseDeadline_validArguments_returnsDeadline() throws BotException {
         Deadline deadline = Parser.parseDeadline("submit report /by 2019-12-02");
 
@@ -57,6 +80,18 @@ class ParserTest {
     void parseDeadline_nonexistentDate_throwsException() {
         assertBotException("Use yyyy-MM-dd for deadline dates, e.g. 2019-12-02.", () ->
                 Parser.parseDeadline("submit report /by 2019-02-29"));
+    }
+
+    @Test
+    void parseDeadline_repeatedByMarker_throwsException() {
+        assertBotException("A deadline can contain only one /by marker.", () ->
+                Parser.parseDeadline("submit report /by 2019-12-02 /by 2019-12-03"));
+    }
+
+    @Test
+    void parseDeadline_markerEmbeddedInWord_throwsMissingMarkerException() {
+        assertBotException("A deadline must include /by followed by its date.", () ->
+                Parser.parseDeadline("submit/by 2019-12-02"));
     }
 
     @Test
@@ -142,6 +177,26 @@ class ParserTest {
     }
 
     @Test
+    void parseEvent_repeatedFromMarker_throwsException() {
+        assertBotException("An event can contain only one /from marker.", () ->
+                Parser.parseEvent("meeting /from 2019-12-02 1400 "
+                        + "/from 2019-12-02 1500 /to 2019-12-02 1600"));
+    }
+
+    @Test
+    void parseEvent_repeatedToMarker_throwsException() {
+        assertBotException("An event can contain only one /to marker.", () ->
+                Parser.parseEvent("meeting /from 2019-12-02 1400 "
+                        + "/to 2019-12-02 1500 /to 2019-12-02 1600"));
+    }
+
+    @Test
+    void parseEvent_reversedMarkers_throwsException() {
+        assertBotException("The /from marker must appear before the /to marker.", () ->
+                Parser.parseEvent("meeting /to 2019-12-02 1600 /from 2019-12-02 1400"));
+    }
+
+    @Test
     void parseDateQuery_validDate_returnsLocalDate() throws BotException {
         assertEquals(LocalDate.of(2019, 12, 2), Parser.parseDateQuery("2019-12-02"));
     }
@@ -209,6 +264,14 @@ class ParserTest {
                 Parser.parseTaskIndex("two", 3, "mark"));
 
         assertEquals("The task number must be a whole number.", exception.getMessage());
+    }
+
+    @Test
+    void parseTaskIndex_multipleNumbers_throwsException() {
+        BotException exception = assertThrows(BotException.class, () ->
+                Parser.parseTaskIndex("1 2", 3, "mark"));
+
+        assertEquals("Enter only one task number for the mark command.", exception.getMessage());
     }
 
     @Test

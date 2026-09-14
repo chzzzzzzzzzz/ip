@@ -63,7 +63,7 @@ public class Bot {
         } catch (BotException error) {
             return ResponseFormatter.formatError(error.getMessage());
         } catch (IOException error) {
-            return ResponseFormatter.formatSavingError();
+            return ResponseFormatter.formatSavingError(error.getMessage());
         }
     }
 
@@ -230,9 +230,13 @@ public class Bot {
      *
      * @param task task to add.
      * @return confirmation that the task was added
+     * @throws BotException if an equivalent task already exists
      * @throws IOException if the updated task list cannot be saved
      */
-    private String addTask(Task task) throws IOException {
+    private String addTask(Task task) throws BotException, IOException {
+        if (tasks.containsSameTask(task)) {
+            throw new BotException("That task is already in your list.");
+        }
         tasks.add(task);
         storage.saveTasks(tasks);
         return ResponseFormatter.formatTaskAdded(task, tasks.size());
