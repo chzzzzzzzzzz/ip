@@ -15,7 +15,7 @@ that file before running the tests. Every case must contain:
 
 When persistence is part of the behavior under test, a case may also contain an
 `Expected data file` fenced text block. The runner compares it exactly with the
-generated `data/duke.txt` file. An `Initial data file` fenced text block seeds
+generated `data/bot.txt` file. An `Initial data file` fenced text block seeds
 that file before startup when loading behavior needs to be tested.
 
 Each test case starts a fresh chatbot process in an isolated temporary working

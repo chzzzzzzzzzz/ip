@@ -19,7 +19,7 @@ public class MainWindow extends AnchorPane {
     private static final Duration EXIT_DELAY = Duration.seconds(1);
     private static final String WELCOME_MESSAGE = "Hi! I'm Bot. What can I help you with?";
 
-    private final Image botImage = new Image(getClass().getResourceAsStream("/images/DaDuke.jpg"));
+    private final Image botImage = new Image(getClass().getResourceAsStream("/images/Bot.jpg"));
 
     @FXML
     private ScrollPane scrollPane;

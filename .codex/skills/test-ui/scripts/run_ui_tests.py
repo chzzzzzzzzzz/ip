@@ -176,7 +176,7 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
             case_directory = Path(build_dir) / f"case-{case_number}"
             case_directory.mkdir()
             if case.initial_data is not None:
-                data_path = case_directory / "data/duke.txt"
+                data_path = case_directory / "data/bot.txt"
                 data_path.parent.mkdir()
                 data_path.write_text("\n".join(case.initial_data) + "\n", encoding="utf-8")
             console_input = "\n".join(case.inputs) + "\n"
@@ -210,7 +210,7 @@ def run_tests(project_root: Path, plan_path: Path, java_home: Path, java_major: 
             data_failed = False
             actual_data = []
             if case.expected_data is not None:
-                data_path = case_directory / "data/duke.txt"
+                data_path = case_directory / "data/bot.txt"
                 if data_path.is_file():
                     actual_data = data_path.read_text(encoding="utf-8").splitlines()
                 print("--- Data file output ---")

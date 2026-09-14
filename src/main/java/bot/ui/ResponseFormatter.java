@@ -51,10 +51,12 @@ public final class ResponseFormatter {
     /**
      * Formats an error encountered while saving tasks.
      *
+     * @param message explanation from the storage layer.
      * @return formatted saving error response
      */
-    public static String formatSavingError() {
-        return "OOPS!!! I couldn't save your tasks to the data file.";
+    public static String formatSavingError(String message) {
+        return "OOPS!!! I couldn't save your tasks: " + message
+                + ". Your latest changes may not be available next time.";
     }
 
     /**

@@ -104,6 +104,27 @@ class StorageTest {
     }
 
     @Test
+    void loadTasks_duplicateTask_reportsLineNumberAndReason() throws IOException {
+        File dataFile = writeDataFile("T | 1 | Read Book\nT | 0 | read book\n");
+
+        IOException exception = assertThrows(IOException.class, () ->
+                new Storage(dataFile).loadTasks());
+
+        assertEquals("invalid data on line 2 (duplicates an earlier task)", exception.getMessage());
+    }
+
+    @Test
+    void loadTasks_dataPathIsDirectory_reportsReason() throws IOException {
+        Path dataDirectory = temporaryDirectory.resolve("bot.txt");
+        Files.createDirectory(dataDirectory);
+
+        IOException exception = assertThrows(IOException.class, () ->
+                new Storage(dataDirectory.toFile()).loadTasks());
+
+        assertEquals("data path is not a file: " + dataDirectory, exception.getMessage());
+    }
+
+    @Test
     void saveTasks_missingParentDirectory_createsDirectoryAndWritesTasks() throws IOException {
         File dataFile = temporaryDirectory.resolve("data/tasks.txt").toFile();
         Storage storage = new Storage(dataFile);

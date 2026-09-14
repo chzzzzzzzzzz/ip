@@ -1,7 +1,9 @@
 package bot.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -112,5 +114,34 @@ class TaskListTest {
         assertEquals("[D][ ] second deadline (by: Dec 02 2019)", tasks.getTask(1).toString());
         assertEquals("[T][ ] first todo", tasks.getTask(2).toString());
         assertEquals("[T][ ] second todo", tasks.getTask(3).toString());
+    }
+
+    @Test
+    void containsSameTask_matchingTodoIgnoresCaseAndCompletionStatus_returnsTrue() {
+        TaskList tasks = new TaskList();
+        Todo existingTask = new Todo("Read Book");
+        existingTask.mark();
+        tasks.add(existingTask);
+
+        assertTrue(tasks.containsSameTask(new Todo("read book")));
+    }
+
+    @Test
+    void containsSameTask_sameDescriptionWithDifferentDates_returnsFalse() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Deadline("submit report", LocalDate.of(2019, 12, 2)));
+
+        assertFalse(tasks.containsSameTask(
+                new Deadline("submit report", LocalDate.of(2019, 12, 3))));
+    }
+
+    @Test
+    void containsSameTask_matchingEventDetails_returnsTrue() {
+        TaskList tasks = new TaskList();
+        LocalDateTime start = LocalDateTime.of(2019, 12, 2, 14, 0);
+        LocalDateTime end = LocalDateTime.of(2019, 12, 2, 16, 0);
+        tasks.add(new Event("meeting", start, end));
+
+        assertTrue(tasks.containsSameTask(new Event("MEETING", start, end)));
     }
 }
