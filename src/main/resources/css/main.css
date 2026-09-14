@@ -1,52 +1,74 @@
 .root {
-    main-color: #edf9f7;
-    accent-color: #1fb7a6;
+    main-color: #f4f7fb;
+    accent-color: #0f9f8f;
+    accent-hover-color: #0b8578;
+    border-color: #d7dee8;
     -fx-background-color: main-color;
-    -fx-font-family: "Arial";
+    -fx-font-family: "System";
+}
+
+.input-area {
+    -fx-background-color: #ffffff;
+    -fx-border-color: border-color transparent transparent transparent;
+    -fx-padding: 10px 12px 12px 12px;
+    -fx-spacing: 8px;
 }
 
 .text-field {
     -fx-background-color: white;
-    -fx-background-radius: 8px 0 0 8px;
-    -fx-border-color: #a7d9d3;
-    -fx-border-radius: 8px 0 0 8px;
-    -fx-font-size: 16px;
-    -fx-padding: 8px 12px;
+    -fx-background-radius: 10px;
+    -fx-border-color: border-color;
+    -fx-border-radius: 10px;
+    -fx-font-size: 14px;
+    -fx-padding: 9px 12px;
+    -fx-prompt-text-fill: #8793a5;
 }
 
 .text-field:focused {
     -fx-border-color: accent-color;
-    -fx-border-width: 2px;
+    -fx-border-width: 1.5px;
 }
 
 .button {
     -fx-background-color: accent-color;
-    -fx-background-radius: 0 8px 8px 0;
-    -fx-font-size: 15px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-min-width: 72px;
+    -fx-padding: 9px 16px;
     -fx-text-fill: white;
 }
 
 .button:hover {
-    -fx-background-color: #159989;
+    -fx-background-color: accent-hover-color;
 }
 
 .button:pressed {
-    -fx-background-color: #0f756a;
+    -fx-background-color: #07675e;
+}
+
+.button:disabled {
+    -fx-opacity: 0.55;
 }
 
 .scroll-pane,
 .scroll-pane .viewport {
-    -fx-background-color: transparent;
+    -fx-background-color: main-color;
+}
+
+#dialogContainer {
+    -fx-background-color: main-color;
+    -fx-padding: 10px 2px 12px 2px;
 }
 
 .scroll-bar {
     -fx-background-color: main-color;
-    -fx-font-size: 10px;
+    -fx-font-size: 8px;
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: accent-color;
+    -fx-background-color: #b4c0ce;
     -fx-background-radius: 1em;
 }
 

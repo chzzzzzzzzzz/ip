@@ -8,16 +8,21 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 
 /**
  * Displays one chat message together with its sender's avatar.
  */
 public class DialogBox extends HBox {
+    private static final double AVATAR_SIZE = 36.0;
+    private static final double MESSAGE_WIDTH_RATIO = 0.78;
+
     @FXML
     private Label dialog;
     @FXML
@@ -40,18 +45,20 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(message);
-        displayPicture.setImage(image);
+        dialog.maxWidthProperty().bind(widthProperty().multiply(MESSAGE_WIDTH_RATIO));
+        configureAvatar(image);
     }
 
     /**
      * Creates a right-aligned dialog for a message sent by the user.
      *
      * @param message message sent by the user.
-     * @param image avatar representing the user.
      * @return user dialog box
      */
-    public static DialogBox getUserDialog(String message, Image image) {
-        return new DialogBox(message, image);
+    public static DialogBox getUserDialog(String message) {
+        DialogBox dialogBox = new DialogBox(message, null);
+        dialogBox.dialog.getStyleClass().add("user-message");
+        return dialogBox;
     }
 
     /**
@@ -68,6 +75,42 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Creates a visually emphasized dialog for an error response from Bot.
+     *
+     * @param message error response sent by Bot.
+     * @param image avatar representing Bot.
+     * @return error dialog box
+     */
+    public static DialogBox getErrorDialog(String message, Image image) {
+        DialogBox dialogBox = getBotDialog(message, image);
+        dialogBox.dialog.getStyleClass().add("error-message");
+        return dialogBox;
+    }
+
+    /**
+     * Crops an avatar to a compact circle, or removes it from the layout when absent.
+     *
+     * @param image avatar to configure, or {@code null} for no avatar.
+     */
+    private void configureAvatar(Image image) {
+        if (image == null) {
+            displayPicture.setManaged(false);
+            displayPicture.setVisible(false);
+            return;
+        }
+
+        double cropSize = Math.min(image.getWidth(), image.getHeight());
+        double cropX = (image.getWidth() - cropSize) / 2;
+        double cropY = (image.getHeight() - cropSize) / 2;
+        displayPicture.setImage(image);
+        displayPicture.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+        displayPicture.setFitHeight(AVATAR_SIZE);
+        displayPicture.setFitWidth(AVATAR_SIZE);
+        displayPicture.setPreserveRatio(false);
+        displayPicture.setClip(new Circle(AVATAR_SIZE / 2, AVATAR_SIZE / 2, AVATAR_SIZE / 2));
+    }
+
+    /**
      * Places the avatar on the left and the message on the right.
      */
     private void flip() {
@@ -75,6 +118,6 @@ public class DialogBox extends HBox {
         ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
         Collections.reverse(children);
         getChildren().setAll(children);
-        dialog.getStyleClass().add("reply-label");
+        dialog.getStyleClass().add("bot-message");
     }
 }
