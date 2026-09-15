@@ -17,7 +17,7 @@ import bot.ui.Ui;
  * A chatbot that stores tasks and executes commands from console or JavaFX interfaces.
  */
 public class Bot {
-    private static final String DEFAULT_DATA_FILE_PATH = "./data/duke.txt";
+    private static final String DEFAULT_DATA_FILE_PATH = "./data/bot.txt";
 
     private final Storage storage;
     private final TaskList tasks;

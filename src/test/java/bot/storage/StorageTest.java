@@ -115,7 +115,7 @@ class StorageTest {
 
     @Test
     void loadTasks_dataPathIsDirectory_reportsReason() throws IOException {
-        Path dataDirectory = temporaryDirectory.resolve("duke.txt");
+        Path dataDirectory = temporaryDirectory.resolve("bot.txt");
         Files.createDirectory(dataDirectory);
 
         IOException exception = assertThrows(IOException.class, () ->

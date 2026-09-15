@@ -4,7 +4,7 @@ Each test case starts with an empty in-memory task list. Expected output omits
 the startup banner, indentation, blank lines, and underscore separators because
 the runner normalizes those presentation details before comparison. Storage
 tests run in isolated temporary directories and may specify the expected
-contents of `data/duke.txt`. Loading tests may seed an initial data file before
+contents of `data/bot.txt`. Loading tests may seed an initial data file before
 the chatbot starts.
 
 ## TC1 — Add and list all task types
