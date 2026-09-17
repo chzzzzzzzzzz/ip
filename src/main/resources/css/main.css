@@ -7,7 +7,7 @@
     -app-border: rgba(94, 234, 212, 0.24);
     -app-text: #e6f3ff;
     -app-muted-text: #8196b4;
-    -fx-font-family: "Avenir Next", "Segoe UI", "System";
+    -fx-font-family: "System";
 }
 
 .app-shell {
@@ -28,7 +28,6 @@
     -fx-effect: dropshadow(gaussian, rgba(20, 217, 196, 0.34), 12, 0.22, 0, 0);
     -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-letter-spacing: 1px;
     -fx-text-fill: -app-text;
 }
 
@@ -73,7 +72,6 @@
     -fx-background-radius: 11px;
     -fx-border-color: rgba(129, 150, 180, 0.28);
     -fx-border-radius: 11px;
-    -fx-caret-color: -app-accent-bright;
     -fx-font-size: 14px;
     -fx-highlight-fill: rgba(20, 217, 196, 0.45);
     -fx-highlight-text-fill: white;
