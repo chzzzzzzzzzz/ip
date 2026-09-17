@@ -11,7 +11,7 @@ import bot.task.TaskList;
  * Formats chatbot results for display by console and graphical interfaces.
  */
 public final class ResponseFormatter {
-    private static final String NEW_LINE = System.lineSeparator();
+    private static final String NEW_LINE = "\n";
     private static final DateTimeFormatter DATE_DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 

@@ -47,6 +47,16 @@ class BotTest {
     }
 
     @Test
+    void getResponse_multilineResponse_usesPlatformIndependentLineFeeds() {
+        Bot bot = createBot();
+
+        String response = bot.getResponse("todo borrow book");
+
+        assertFalse(response.contains("\r"));
+        assertEquals(2, response.chars().filter(character -> character == '\n').count());
+    }
+
+    @Test
     void getResponse_markUnmarkAndDelete_updatesTaskList() {
         Bot bot = createBot();
         bot.getResponse("todo read book");
