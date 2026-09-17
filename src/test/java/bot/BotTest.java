@@ -112,13 +112,13 @@ class BotTest {
                 3.[E][ ] later (from: Dec 10 2019, 2:00PM to: Dec 10 2019, 4:00PM)
                 4.[T][ ] buy milk
                 5.[T][ ] read book""", bot.getResponse("sort"));
-        assertEquals("""
-                E | 0 | earlier | 2019-12-01T09:00 | 2019-12-01T10:00
-                D | 0 | submit report | 2019-12-05
-                E | 0 | later | 2019-12-10T14:00 | 2019-12-10T16:00
-                T | 0 | buy milk
-                T | 0 | read book
-                """, Files.readString(dataFile));
+        String expectedData = String.join(System.lineSeparator(),
+                "E | 0 | earlier | 2019-12-01T09:00 | 2019-12-01T10:00",
+                "D | 0 | submit report | 2019-12-05",
+                "E | 0 | later | 2019-12-10T14:00 | 2019-12-10T16:00",
+                "T | 0 | buy milk",
+                "T | 0 | read book") + System.lineSeparator();
+        assertEquals(expectedData, Files.readString(dataFile));
     }
 
     @Test
