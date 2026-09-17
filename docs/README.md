@@ -4,7 +4,7 @@
 It keeps track of todos, deadlines, and events, and saves every change
 automatically so that your tasks are available the next time you start it.
 
-![Bot user interface](images/Ui.png)
+![Bot user interface](Ui.png)
 
 ## Contents
 

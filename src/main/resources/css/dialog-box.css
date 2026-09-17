@@ -1,34 +1,40 @@
 .dialog-box {
-    -fx-spacing: 8px;
+    -fx-spacing: 10px;
 }
 
 .message-label {
     -fx-font-size: 14px;
-    -fx-line-spacing: 2px;
-    -fx-padding: 9px 12px;
+    -fx-line-spacing: 3px;
+    -fx-padding: 11px 14px;
 }
 
 .user-message {
-    -fx-background-color: #157f74;
-    -fx-background-radius: 14px 14px 4px 14px;
-    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to bottom right, #14b8a6, #087d91);
+    -fx-background-radius: 18px 18px 5px 18px;
+    -fx-border-color: rgba(153, 246, 228, 0.42);
+    -fx-border-radius: 18px 18px 5px 18px;
+    -fx-effect: dropshadow(gaussian, rgba(20, 217, 196, 0.2), 12, 0.16, 0, 3);
+    -fx-text-fill: #f2fffd;
 }
 
 .bot-message {
-    -fx-background-color: white;
-    -fx-background-radius: 14px 14px 14px 4px;
-    -fx-border-color: #d7dee8;
-    -fx-border-radius: 14px 14px 14px 4px;
+    -fx-background-color: rgba(12, 24, 45, 0.94);
+    -fx-background-radius: 18px 18px 18px 5px;
+    -fx-border-color: rgba(94, 234, 212, 0.28);
+    -fx-border-radius: 18px 18px 18px 5px;
     -fx-border-width: 1px;
-    -fx-text-fill: #263342;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.32), 14, 0.16, 0, 4);
+    -fx-text-fill: #dcecff;
 }
 
 .error-message {
-    -fx-background-color: #fff1f2;
-    -fx-border-color: #f43f5e;
-    -fx-text-fill: #9f1239;
+    -fx-background-color: linear-gradient(to bottom right, rgba(67, 18, 38, 0.96), rgba(37, 17, 34, 0.96));
+    -fx-border-color: rgba(251, 113, 133, 0.78);
+    -fx-effect: dropshadow(gaussian, rgba(244, 63, 94, 0.22), 14, 0.2, 0, 3);
+    -fx-text-fill: #fecdd3;
 }
 
 #displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.18), 5, 0.2, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(94, 234, 212, 0.62), 10, 0.3, 0, 0);
+    -fx-opacity: 0.96;
 }
